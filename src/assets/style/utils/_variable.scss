@@ -1,0 +1,74 @@
+$downBar-index: 100;
+$topBar-index: 101;
+$myList-index:102;
+$minigame-index: 200;
+$popout-notice-index:102;
+$popout-index: 900;
+$popout-page-index: 901;
+$message-wrap-index: 1100;
+$message-index: 1101;
+$service-index: 1102;
+// $game-iframe-index: 1000;
+$game-iframe-home-index: 1001;
+$dist-iframe-index: 800;
+$loading-index: 910;
+$main-lobby-index: 10000;
+$scroll-index: 100000;
+$primary: white;
+$secondary: #5f83a3;
+$title: #316da1;
+$light: #d8d8d8;
+$darkpageTop-color:#2b1e38;
+$darkpageMiddle-color:#2B1E38;
+$darkpageBottom-color:#151320;
+$text-primary: #fff;
+$text-secondary: #091837;
+$border-primary: #686b7e;
+$modal-key: #6b0185;
+$modal-key-light: #A903D3;
+$modal-focus-key: #00ffc8d9;
+$coin-color: #ffe646d9;
+$message-content: #28dcff;
+$disableClick-page-color:#42324D;
+$canclick-pageBtn-color: #5C3B7A;
+$input: #646d80;
+$mainBg: #fff;
+$popotContent-color:#9487A3;
+$downBar-height: 3.5rem;
+$topBar-height: 3.5rem;
+$title-height: 3.5rem;
+$notLogin-topBar-height: 3.5rem; //原本是4.5
+$layout-footer-color:#191a1c;
+
+// breakpoints
+$breakpoints-up: (
+  "3xl": "1800px",
+  "xxl": "1400px",
+  "xl": "1200px",
+  "lg": "992px",
+  "md": "768px",
+  "sm": "576px",
+  "xs": "250px"
+);
+
+// border-radius
+$border-radius-lg: 10px;
+$border-radius-md: 6px;
+$border-radius-sm: 2px;
+$border-radius-rounded-btn: 50px;
+$border-radius-circle: 50%;
+
+// new theme
+$primary-title: #e2d0ff;
+$primary-text: #ba9fe7;
+$primary-white: #e5e5e5;
+$primary-bg: #170524;
+
+$secondary-text: #7e689f;
+$secondary-bg: #211C31;
+$secondary-btn: #795186;
+
+$button-disabled: #44304B;
+
+// warning
+$warning: #FF0000;

@@ -1,0 +1,210 @@
+.authWrap {
+  // height: calc(var(--vh, 1vh) * 100);
+  // padding: 20px 30px;
+  // background: #23003e;
+  width: 400px;
+  display: inline-block;
+  margin-top: calc($topBar-height + 1rem);
+  background: $darkpageMiddle-color;
+  &.authWrapBG2{
+    background:$darkpageBottom-color
+  }
+  border-radius: 10px;
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4rem;
+    background: $darkpageBottom-color;
+    border-radius: 10px 10px 0 0;
+    .logo {
+      text-align: center;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      img {
+        width: 80%;
+        height: 50%;
+        object-fit: contain;
+      }
+    }
+    .close {
+      height: 35%;
+      object-fit: contain;
+      margin-right: 1rem;
+    }
+  }
+  .main {
+    padding: 2rem 2.5rem;
+    text-align: left;
+    .link-wrap {
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      margin-bottom: 5%;
+      justify-content: center;
+      .link-item {
+        width: 40%;
+        height: 2.2rem;
+        text-align: center;
+        position: relative;
+        z-index: 0;
+        &:first-child {
+          border-radius: 5px 0 0 5px;
+        }
+        &.selected {
+          background: #a903d1;
+          border: 2px solid #a903d1;
+          color: white;
+        }
+        &.notSelected {
+          // background:  #A903D1;
+          border: 2px solid #a903d1;
+          color: #a903d1;
+        }
+        p {
+          // color: #fff;
+          font-size: 1.2rem;
+          font-weight: bold;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 2;
+        }
+        button {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  .input {
+    height: 2.5rem;
+    // height: 4rem;
+    // font-size: 5vmin;
+    // @include mobile-landscape {
+    //   height: 4.5rem;
+    // }
+  }
+  .title {
+    display: flex;
+    justify-content: center;
+    margin: 25% 0 10% 0;
+    color: #21deac;
+    font-size: 2rem;
+  }
+  .button {
+    // width: 11rem;
+    height: 2.5rem;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: #ffffff;
+    margin: 0 auto;
+    // margin-bottom: 15px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+}
+
+
+
+.login-wrap {
+  width: 100%;
+  .input-wrap {
+    &.input-wrap2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      > .w-90 {
+        width: 90%;
+      }
+      > .edit-wrap {
+        width: 8%;
+        margin-bottom: 8px;
+        >.mb-8{
+          margin-bottom: 8px;
+        }
+      }
+    }
+    @include breakpoint-up("3xl") {
+      height: 10vh;
+    }
+  }
+  .checkbox-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .remember {
+      display: flex;
+      align-items: center;
+      object-fit: contain;
+      img {
+        width: 35px;
+        margin-right: 10px;
+      }
+      label {
+        font-size: 1rem;
+      }
+    }
+    .forget {
+      font-weight: bold;
+      color: rgb(30, 120, 222);
+      text-decoration: underline;
+    }
+  }
+  .button {
+    width: 100%;
+    border-radius: 10px;
+    &.w-80{
+      width: 80%;
+    }
+    &.canclickBtn{
+      background:$canclick-pageBtn-color;
+      font-size: 0.8rem;
+      position: relative;
+      padding-left: 10px;
+      // display: flex;
+      // justify-content: space-around;
+      // align-items: center;
+    }
+    &.submit {
+      margin-top: 2rem;
+      background: #6b0185;
+    }
+    &.teach {
+      margin-top: 2rem;
+    }
+    &.mt-1 {
+      margin-top: 1rem;
+    }
+    >img{
+      position: absolute;
+      left: 10px;
+      height: 60%;
+      object-fit: contain;
+    }
+  }
+  .backhomeBtn {
+    width: 11rem;
+    height: 2.5rem;
+    border-radius: 2.5rem;
+    background: rgb(30, 120, 222);
+    margin: 1rem auto 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+}
