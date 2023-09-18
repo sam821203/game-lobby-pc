@@ -13,7 +13,7 @@
         </span>
       </div>
       <div class="right">
-        {{ $t("邀請好友_我的列表") }}:
+        <span> {{ $t("邀請好友_我的列表") }}</span>
         <img
           v-show="!userInfo.is_test"
           src="@/assets/images/myList/add.png"
@@ -41,14 +41,17 @@
 import { defineProps } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "@/store";
-const { useAuth, useModal, useMessage } = useStore();
+
+const { useAuth, useModal, useMessage, useActivityList } = useStore();
 //
 const authStore = useAuth();
+const { getUserInfo } = authStore;
 const { userInfo } = storeToRefs(authStore);
 const { logout } = authStore;
 //
 const modalStore = useModal();
 const msg = useMessage();
+const activitySelected = useActivityList();
 const { openMsg } = msg;
 const { toggleModal, modalType } = modalStore;
 //
@@ -56,7 +59,13 @@ import i18n from "@/utils/i18n";
 const { t } = i18n.global;
 //
 import { usectrlLogin } from "@/store/ctrlLogin";
-const { userInfosetting } = storeToRefs(usectrlLogin());
+const {
+  userInfosetting,
+  bgmStatus,
+  depositPageStatus,
+  withdrawalPageStatus,
+  inviteFriends,
+} = storeToRefs(usectrlLogin());
 const { changeloginpageStatus } = usectrlLogin();
 //
 import { serviceConect } from "@/store/serviceConnet";
@@ -81,21 +90,28 @@ const closeModal = () => {
 //
 //邀請好友
 const openQRcode = () => {
-  toggleModal(true);
-  modalType("FriendQRcode", "longContent");
+  // toggleModal(true);
+  // modalType("FriendQRcode", "longContent");
+  inviteFriends.value = true;
   closeModal();
 };
 //
-const conditionVerify = () => {
-  if (userInfo.value.real_name && userInfo.value.is_deposit) {
-    router.push("/deposit/withdraw");
+const conditionVerify = async () => {
+  await getUserInfo();
+  if (
+    userInfo.value.real_name &&
+    userInfo.value.is_deposit &&
+    userInfo.value.is_set_second_password
+  ) {
+    withdrawalPageStatus.value = true;
   }
   if (!userInfo.value.real_name) {
     //有無寫姓名
     openMsg({
       content: t("請先填寫您的真實姓名"),
     }).then(() => {
-      router.push("/info/userInfo");
+      // router.push("/info/userInfo");
+      userInfosetting.value = true;
     });
     return;
   }
@@ -104,7 +120,16 @@ const conditionVerify = () => {
     openMsg({
       content: t("請先進行存款"),
     }).then(() => {
-      router.push("/deposit/deposit");
+      depositPageStatus.value = true;
+    });
+    return;
+  }
+  if (!userInfo.value.is_set_second_password) {
+    //有無存款過
+    openMsg({
+      content: t("請先設定交易密碼"),
+    }).then(() => {
+      userInfosetting.value = true;
     });
     return;
   }
@@ -127,11 +152,10 @@ const itemList = {
 const buttonSwitch = (type) => {
   switch (type) {
     case "deposit_2":
-      router.push("/deposit/deposit");
+      depositPageStatus.value = true;
       break;
     case "DrawMoney":
       conditionVerify();
-      // router.push("/deposit/withdraw");
       break;
     case "Vip":
       router.push("/operation/vip");
@@ -146,6 +170,7 @@ const buttonSwitch = (type) => {
       router.push("/operation/tradeRecord");
       break;
     case "record":
+      activitySelected.selectStatus = "getRecord";
       router.push({
         path: "/activity/activityList",
         query: { selected: "getRecord" },
@@ -163,7 +188,6 @@ const buttonSwitch = (type) => {
       openMsg({
         content: t("logoutMsg"),
         hasBtn: true,
-        hasCancel: true,
       }).then(() => {
         logout();
         router.push("/home");
@@ -182,7 +206,8 @@ const buttonSwitch = (type) => {
       modalType("Email", "longContent");
       break;
     case "setting":
-      router.push("/setting/sound");
+      // router.push("/setting/sound");
+      bgmStatus.value = true;
       break;
     // case "drawMoneySetting":
     //   router.push("/deposit/gCashSetting");
@@ -211,25 +236,22 @@ const buttonSwitch = (type) => {
 .block {
   width: 100%;
   position: fixed;
-  // top: $topBar-height;
   top: 0;
   left: 0%;
   height: calc(100vh);
   padding: 0 1rem;
-  background: blue;
   opacity: 0.5;
   z-index: $myList-index;
 }
 .detailList {
   width: 422px;
-  // height: 393px;
   position: fixed;
   box-shadow: border-box;
-  // top: 0;
   top: $topBar-height;
   right: calc(1rem + 5px);
   padding: 0 12px;
-  background-image: url("@/assets/images/myList/member_box.png");
+  border-radius: $border-radius-md;
+  background: $canclick-pageBtn-bg;
   background-size: 100% 100%;
   color: white;
   z-index: calc($myList-index + 1);
@@ -238,10 +260,8 @@ const buttonSwitch = (type) => {
     height: 83px;
     display: flex;
     justify-content: space-between;
-    // background: red;
     > div {
       display: flex;
-      // width: 50%;
     }
     .left {
       align-items: center;
@@ -265,6 +285,9 @@ const buttonSwitch = (type) => {
     .right {
       align-items: center;
       justify-content: flex-end;
+      span {
+        margin-right: 5px;
+      }
       img {
         height: 38px;
         object-fit: contain;
@@ -273,7 +296,6 @@ const buttonSwitch = (type) => {
   }
   .bottom {
     width: 100%;
-    // background: green;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -284,8 +306,8 @@ const buttonSwitch = (type) => {
       padding: 6px 10px;
       margin-bottom: 13px;
       box-sizing: border-box;
-      background: $disableClick-page-color;
-      border-radius: 10px;
+      background: $my-func-button-bg;
+      border-radius: $border-radius-md;
       img {
         height: 100%;
         object-fit: contain;

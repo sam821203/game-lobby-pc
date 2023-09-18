@@ -362,7 +362,7 @@ const switchContent = (value) => {
 <style lang="scss" scoped>
 .option-wrap {
   color: #fff;
-  border-radius: 10px;
+  border-radius: $border-radius-md;
   display: flex;
   justify-content: space-around;
   width: 90%;
@@ -411,7 +411,7 @@ const switchContent = (value) => {
   padding: 5%;
   padding-top: 0;
   .title {
-    color: red;
+    color: $error-color;
     margin-top: 3%;
     margin-bottom: 2%;
   }

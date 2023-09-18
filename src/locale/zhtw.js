@@ -1056,7 +1056,7 @@ export default {
     deleteOrder: "刪除訂單",
     support: "如對訂單有任何問題，請聯繫客服",
     deleteRemind:
-      '<span style="font-size: 1.2rem">刪除訂單後可重新創建新訂單<p style="color: red; margin-top: 30%">如已存款，請勿刪除此筆訂單</p></span>',
+      '<span style="font-size: 1.2rem">刪除訂單後可重新創建新訂單<p style="color: $error-color; margin-top: 30%">如已存款，請勿刪除此筆訂單</p></span>',
     balance: "錢包餘額",
     validBets: "目前流水",
     threshold: "提款門檻",

@@ -171,6 +171,7 @@ export default {
     logOut: "Log out",
     logOutConfirm: "Você deseja sair?",
     confirm: "OK",
+    confirmReceive: "Confirmação de resgate.",
     isNotOpen: "Function is not turned on",
     "維護中，請稍後再試": "Under Maintenance, please try again later",
     cancel: "Cancelar",
@@ -232,7 +233,8 @@ export default {
     臨時維護: "Temporary Maintenance",
     "親愛的會員您好，為提供您更好的遊戲體驗，本平台即將於10分鐘後進行臨時維護，請玩家儘早離開遊戲和登出，若造成您的不便，敬請見諒。哈希王團隊敬上":
       "Dear members,For your better gaming experience,the platform will be under maintenance in 10 minutes.We apologize for any inconvenience.",
-    versionUpdate: "Please click ok to update the latest version.",
+    versionUpdate:
+      "Por favor, clique em OK para atualizar para a versão mais recente.",
     jpMsg:
       "Ganhe o bônus de melhor amigo todas as segundas-feiras.\nQuanto mais amigos você recomendar, mais você ganha.",
     competitionJP:
@@ -390,7 +392,7 @@ export default {
     deleteOrder: "Delete the Deposit",
     support: "Please contact the Support Center for any question.",
     deleteRemind:
-      '<span style="font-size: 1.2rem">You can add a new Deposit after a deposit deletion.<p style="color: red; margin-top: 30%">Please do not delete the Desposit if the despoit is made.</p></span>',
+      '<span style="font-size: 1.2rem">You can add a new Deposit after a deposit deletion.<p style="color: $error-color; margin-top: 30%">Please do not delete the Desposit if the despoit is made.</p></span>',
     balance: "Saldo",
     validBets: "Apostas Válidas",
     threshold: "Limite",
@@ -493,40 +495,40 @@ export default {
     content5:
       "Como condição para usar os serviços, o usuário garante e se compromete a não usar ou vincular-se ao site, aos serviços, ao software e/ou às informações para qualquer finalidade que viole qualquer lei aplicável ao usuário, viole estes termos e/ou seja proibida por estes termos. Além de todas as outras representações e garantias estabelecidas nestes termos, o usuário neste momento garante e se compromete ainda que, como condição para usar os serviços:",
     content6:
-      "1. O usuário está agindo em sua própria capacidade e nome, e não em nome de outra pessoa.",
-    content7: "2. A capacidade legal do usuário não está restrita.",
+      "I. O usuário está agindo em sua própria capacidade e nome, e não em nome de outra pessoa.",
+    content7: "II. A capacidade legal do usuário não está restrita.",
     content8:
-      "3. O usuário não foi diagnosticado ou identificado como jogador compulsivo.",
+      "III. O usuário não foi diagnosticado ou identificado como jogador compulsivo.",
     content9:
-      '4. O usuário tem (a) pelo menos 18 anos de idade; ou (b) a idade legal ou a maioridade, conforme definido por qualquer lei aplicável ao usuário ("Idade Legal").',
+      'IV. O usuário tem (a) pelo menos 18 anos de idade; ou (b) a idade legal ou a maioridade, conforme definido por qualquer lei aplicável ao usuário ("Idade Legal").',
     content10:
-      "5. O usuário está totalmente ciente do risco de perder dinheiro ao usar os serviços.",
+      "V. O usuário está totalmente ciente do risco de perder dinheiro ao usar os serviços.",
     content11:
-      "6. Os fundos depositados pelo usuário não são provenientes de atividades criminosas ou ilegais, não autorizadas ou licenciadas.",
+      "VI. Os fundos depositados pelo usuário não são provenientes de atividades criminosas ou ilegais, não autorizadas ou licenciadas.",
     content12:
-      "7. O usuário não está envolvido em atividades criminosas ou ilegais, não autorizadas ou licenciadas, e/ou não está tentando usar sua conta com a Evostake para fazê-lo; o usuário não deve usar ou permitir que outros usem os serviços ou a conta do usuário para se envolver em qualquer atividade criminosa ou ilegal, de acordo com qualquer lei aplicável ao usuário ou a nós, incluindo, mas não se limitando à lavagem de dinheiro.",
+      "VII. O usuário não está envolvido em atividades criminosas ou ilegais, não autorizadas ou licenciadas, e/ou não está tentando usar sua conta com a Evostake para fazê-lo; o usuário não deve usar ou permitir que outros usem os serviços ou a conta do usuário para se envolver em qualquer atividade criminosa ou ilegal, de acordo com qualquer lei aplicável ao usuário ou a nós, incluindo, mas não se limitando à lavagem de dinheiro.",
     content13:
-      "8. Mantenha o nome de usuário, número da conta e senha do usuário confidenciais para evitar acesso ou uso não autorizado. Altere a senha ou nos notifique imediatamente se o nome de usuário, número da conta ou senha for comprometido de alguma forma.",
+      "VIII. Mantenha o nome de usuário, número da conta e senha do usuário confidenciais para evitar acesso ou uso não autorizado. Altere a senha ou nos notifique imediatamente se o nome de usuário, número da conta ou senha for comprometido de alguma forma.",
     content14:
-      "9. Seja o único responsável por quaisquer atividades relacionadas à conexão e uso dos Serviços por meio do site e/ou dispositivos conectados sob o nome de usuário, número da conta e senha do usuário, independentemente de tal conexão e/ou uso ser autorizado ou conhecido pelo usuário.",
+      "IX. Seja o único responsável por quaisquer atividades relacionadas à conexão e uso dos Serviços por meio do site e/ou dispositivos conectados sob o nome de usuário, número da conta e senha do usuário, independentemente de tal conexão e/ou uso ser autorizado ou conhecido pelo usuário.",
     content15:
-      "10. Não utilize os Serviços, o site, os equipamentos conectados, o software e as informações de maneira que interfira ou possa interferir no uso dos Serviços e do site por outros usuários, nem realize qualquer ato que reduza ou possa reduzir a eficácia da operação dos Serviços e do site.",
+      "X. Não utilize os Serviços, o site, os equipamentos conectados, o software e as informações de maneira que interfira ou possa interferir no uso dos Serviços e do site por outros usuários, nem realize qualquer ato que reduza ou possa reduzir a eficácia da operação dos Serviços e do site.",
     content16:
-      "11. Não solicitar ou tentar obter de qualquer forma informações sobre outros usuários.",
+      "XI. Não solicitar ou tentar obter de qualquer forma informações sobre outros usuários.",
     content17:
-      "12. Não fazer upload ou distribuir programas, arquivos ou dados que contenham vírus, estejam corrompidos ou possam afetar o desempenho dos equipamentos conectados, software, serviços e/ou site.",
+      "XII. Não fazer upload ou distribuir programas, arquivos ou dados que contenham vírus, estejam corrompidos ou possam afetar o desempenho dos equipamentos conectados, software, serviços e/ou site.",
     content18:
-      "13. A conexão ou uso dos serviços e informações pelo usuário por meio do site e/ou do dispositivo conectado não viola as leis aplicáveis ao usuário; nem viola quaisquer obrigações contratuais que vinculem o usuário pessoalmente ou o proprietário do país em que o usuário está atualmente conectado ao site ou usando o dispositivo conectado, e não é proibido por tais leis ou obrigações contratuais.",
+      "XIII. A conexão ou uso dos serviços e informações pelo usuário por meio do site e/ou do dispositivo conectado não viola as leis aplicáveis ao usuário; nem viola quaisquer obrigações contratuais que vinculem o usuário pessoalmente ou o proprietário do país em que o usuário está atualmente conectado ao site ou usando o dispositivo conectado, e não é proibido por tais leis ou obrigações contratuais.",
     content19:
-      "14. Não utilizar qualquer equipamento, máquina, dispositivo, software, programa ou outro meio (ou qualquer coisa de natureza semelhante) para interferir ou tentar interferir no funcionamento adequado dos Serviços, Equipamentos Conectados, Software, Site, Informações ou quaisquer transações oferecidas no Site e/ou Equipamentos Conectados.",
+      "XIV. Não utilizar qualquer equipamento, máquina, dispositivo, software, programa ou outro meio (ou qualquer coisa de natureza semelhante) para interferir ou tentar interferir no funcionamento adequado dos Serviços, Equipamentos Conectados, Software, Site, Informações ou quaisquer transações oferecidas no Site e/ou Equipamentos Conectados.",
     content20:
-      "15. Não postar ou transmitir para o Site e/ou Equipamentos Conectados ou qualquer outro usuário qualquer conteúdo ilegal, de assédio, abusivo, ameaçador, difamatório, calunioso, obsceno, indecente, inflamatório, discriminatório racialmente, pornográfico ou vulgar, ou que possa constituir ou incitar um crime, dar origem a responsabilidade civil ou violar qualquer lei.",
+      "XV. Não postar ou transmitir para o Site e/ou Equipamentos Conectados ou qualquer outro usuário qualquer conteúdo ilegal, de assédio, abusivo, ameaçador, difamatório, calunioso, obsceno, indecente, inflamatório, discriminatório racialmente, pornográfico ou vulgar, ou que possa constituir ou incitar um crime, dar origem a responsabilidade civil ou violar qualquer lei.",
     content21:
-      "16. O usuário não é um diretor, funcionário, consultor, associado ou agente da Evostake ou de qualquer uma de suas afiliadas, nem está relacionado ou reside na mesma residência que qualquer uma das pessoas mencionadas acima.",
+      "XVI. O usuário não é um diretor, funcionário, consultor, associado ou agente da Evostake ou de qualquer uma de suas afiliadas, nem está relacionado ou reside na mesma residência que qualquer uma das pessoas mencionadas acima.",
     content22:
-      '17. E não interfere no uso dos Serviços, do Site, do Software, dos Dispositivos Conectados e/ou das Informações por outros usuários ou inicia e/ou participa de pesquisas, concursos, correntes de e-mail ou na postagem/envio de "spam" ou outros envios em massa não solicitados.',
+      'XVII. E não interfere no uso dos Serviços, do Site, do Software, dos Dispositivos Conectados e/ou das Informações por outros usuários ou inicia e/ou participa de pesquisas, concursos, correntes de e-mail ou na postagem/envio de "spam" ou outros envios em massa não solicitados.',
     content23:
-      "18.And does not interfere with other users' use of the Services,the Site,the Software,the Connected Devices and/or the Information or initiate and/or participate in surveys,contests,chain letters or the posting/sending of ”spam“ or other unsolicited mass mailings.",
+      "XVIII. And does not interfere with other users' use of the Services,the Site,the Software,the Connected Devices and/or the Information or initiate and/or participate in surveys,contests,chain letters or the posting/sending of ”spam“ or other unsolicited mass mailings.",
     title5: "5.Registrar para abrir uma conta e se tornar um membro",
     content24:
       'IPara participar e usar os Serviços por meio da Evostake, o usuário deve preencher um formulário de abertura de conta e adesão ("Formulário de Adesão") seguindo os procedimentos descritos no site. O usuário declara e se compromete que todas as informações fornecidas pelo usuário no registro e processamento do Formulário de Adesão, incluindo o nome do usuário ("Nome"), origem dos fundos (incluindo números relevantes de contas bancárias e cartões) e endereço conforme declarado no Formulário de Adesão, são verdadeiros, precisos e completos em todos os aspectos. A Evostake tomará as medidas necessárias e razoáveis para manter a confidencialidade das informações pessoais fornecidas pelos usuários. Os dados pessoais e informações de apostas que recebemos dos usuários serão mantidos estritamente confidenciais, a menos que alguma lei exija divulgação, estatuto, regulamentação, ordem ou decisão de um tribunal ou órgão regulador ou autoridade regulatória ou de aplicação da lei relevante ou de acordo com estes Termos e Condições. Os usuários são os únicos responsáveis pela confidencialidade de suas informações pessoais. Reservamos o direito de divulgar os dados dos usuários a nossos provedores de serviços de processamento de pagamentos e instituições financeiras na medida do necessário para processar transações de pagamento para os serviços do site. O usuário também é o único responsável por garantir que o uso e a conexão do usuário ao site e as informações nele contidas, o download e a instalação de software e/ou o uso e participação do usuário nos serviços não sejam proibidos por quaisquer leis aplicáveis ao usuário.',
@@ -572,30 +574,29 @@ export default {
     content39:
       "A Evostake tem o direito, além dos outros direitos da Evostake nesta seção, de anular quaisquer ganhos e confiscar o saldo na conta de apostas do usuário. Além disso, a Evostake tem o direito de encerrar este acordo e/ou suspender a prestação de serviços/bloquear a conta do usuário, a seu exclusivo critério, se a Evostake tiver boas razões para acreditar ou provar que:",
 
-    content40: "1. O Usuário possui mais de uma conta ativa na Evostake.",
+    content40: "I. O Usuário possui mais de uma conta ativa na Evostake.",
     content41:
-      "2. O nome do Usuário não corresponde ao nome do titular do cartão de crédito ou débito ou de outra conta de pagamento usado para fazer a compra ou depósito na Evostake.",
+      "II. O nome do Usuário não corresponde ao nome do titular do cartão de crédito ou débito ou de outra conta de pagamento usado para fazer a compra ou depósito na Evostake.",
     content42:
-      "3. O Usuário participa de uma promoção da Evostake e se retira da promoção antes que os requisitos da promoção sejam cumpridos.",
+      "III. O Usuário participa de uma promoção da Evostake e se retira da promoção antes que os requisitos da promoção sejam cumpridos.",
     content43:
-      "4. O Usuário fornece informações de registro incorretas ou enganosas.",
+      "IV. O Usuário fornece informações de registro incorretas ou enganosas.",
     content44:
-      "5. O Usuário não fornece ou omite fornecer as informações de identificação necessárias.",
-    content45: "6. O Usuário é menor de idade.",
-    content46:
-      "7. O Usuário se conecta e usa os serviços em uma área onde o acesso aos serviços é legalmente proibido.",
+      "V. O Usuário não fornece ou omite fornecer as informações de identificação necessárias.",
+    content46: "VI. O Usuário é menor de idade.",
     content47:
-      '8. O Usuário fez ou causou a realização de um "reembolso" para nós ou negou qualquer transação ou depósito feito em sua conta.',
+      "VII. O Usuário se conecta e usa os serviços em uma área onde o acesso aos serviços é legalmente proibido.",
     content48:
-      "9. O depósito do Usuário é resultado de um crime ou outra atividade ilegal ou não autorizada.",
+      "VIII. O Usuário fez ou causou a realização de um 'reembolso' para nós ou negou qualquer transação ou depósito feito em sua conta.",
     content49:
-      "10. O Usuário é encontrado por ter fraudado ou tentado fraudar qualquer pessoa, ou foi constatado pela Evostake que ele usou inteligência artificial ou outros sistemas (incluindo sistemas mecânicos, computadores, software ou outros sistemas automatizados) especificamente projetados para interferir/desestabilizar o sistema, ou foi constatado que ele está conspirando ou tentando conspirar com outros jogadores para fraudar a Evostake ou outros jogadores.",
+      "IX. O depósito do Usuário é resultado de um crime ou outra atividade ilegal ou não autorizada.",
     content50:
-      "11. O Usuário permite (intencionalmente ou não) que outra pessoa utilize sua conta.",
+      "X. O Usuário é encontrado por ter fraudado ou tentado fraudar qualquer pessoa, ou foi constatado pela Evostake que ele usou inteligência artificial ou outros sistemas (incluindo sistemas mecânicos, computadores, software ou outros sistemas automatizados) especificamente projetados para interferir/desestabilizar o sistema, ou foi constatado que ele está conspirando ou tentando conspirar com outros jogadores para fraudar a Evostake ou outros jogadores.",
     content51:
-      "12. O Usuário não cumpre nenhum dos termos de uso estabelecidos neste acordo.",
+      "XI. O Usuário permite (intencionalmente ou não) que outra pessoa utilize sua conta.",
 
-    content52: "13.The user did not disclose the fact that he is in Taiwan.",
+    content52:
+      "XII. O Usuário não cumpre nenhum dos termos de uso estabelecidos neste acordo.",
     content53:
       "Supondo que suspendamos a prestação do serviço e/ou congelemos uma conta conforme necessário. Nesse caso, o serviço e a conta do usuário serão restabelecidos e descongelados após o usuário implementar as ações corretivas necessárias (se corrigíveis) e receber uma confirmação nossa de que estamos plenamente satisfeitos com a ação corretiva do usuário. Congelamento/encerramento de contas em que o mesmo jogador tenha registrado várias contas e em que uma das contas seja suspensa ou encerrada por qualquer motivo, reservamos o direito de encerrar as outras contas e encerrar/cancelar todas as transações de apostas e depósito/saque.",
     title14: "14. Força Maior",
@@ -617,32 +618,33 @@ export default {
       "Nosso objetivo aqui na Evostakeé o seu entretenimento. Os jogos de cassino podem proporcionar horas de diversão, onde você pode testar sua sorte e habilidades. No entanto, reconhecemos que o jogo pode se tornar um problema para algumas pessoas e, quando sai do controle, pode afetar a estabilidade financeira e os relacionamentos pessoais. Portanto, para evitar ou reduzir possíveis danos relacionados ao jogo, preste atenção nos seguintes pontos:",
     title1: "1. Prevenção e proteção:",
     content2:
-      "1. Antes do jogo, limite e controle seu depósito e reduza suas apostas.",
-    content3: "2. Evite que o jogo afete seu trabalho diário e sua vida.",
-    content4: "3. Lembre-se de que apostar não é sua principal fonte de renda.",
-    content5: "4. Não jogue sob influência de álcool ou qualquer medicamento.",
-    content6: "5. Não tente recuperar suas perdas continuando o jogo.",
+      "I. Antes do jogo, limite e controle seu depósito e reduza suas apostas.",
+    content3: "II. Evite que o jogo afete seu trabalho diário e sua vida.",
+    content4:
+      "III. Lembre-se de que apostar não é sua principal fonte de renda.",
+    content5: "IV. Não jogue sob influência de álcool ou qualquer medicamento.",
+    content6: "V. Não tente recuperar suas perdas continuando o jogo.",
     content7:
-      "6. Para obter mais conselhos e informações sobre responsabilidade no jogo, visite",
+      "VI. Para obter mais conselhos e informações sobre responsabilidade no jogo, visite",
     title2: "2.Sinais de vício:",
-    content8: "1. Você é afetado por si mesmo ou por alguém ao seu redor.",
-    content9: "2. Passar mais tempo jogando do que você pode pagar.",
-    content10: "3. Encontrar dificuldade em controlar ou parar de jogar.",
-    content11: "4. Brigar com familiares ou amigos por dinheiro ou apostas.",
+    content8: "I. Você é afetado por si mesmo ou por alguém ao seu redor.",
+    content9: "II. Passar mais tempo jogando do que você pode pagar.",
+    content10: "III. Encontrar dificuldade em controlar ou parar de jogar.",
+    content11: "IV. Brigar com familiares ou amigos por dinheiro ou apostas.",
     content12:
-      "5. Perder interesse em atividades cotidianas, como socializar com amigos ou familiares.",
-    content13: "6. Pensar ou discutir constantemente sobre jogos de azar.",
-    content14: "7. Mentir ou esconder seu comportamento de apostas.",
+      "V. Perder interesse em atividades cotidianas, como socializar com amigos ou familiares.",
+    content13: "VI. Pensar ou discutir constantemente sobre jogos de azar.",
+    content14: "VII. Mentir ou esconder seu comportamento de apostas.",
     content15:
-      "8. Tentar compensar as perdas de apostas ou se livrar de dificuldades econômicas através de apostas.",
-    content16: "9. Continuar apostando até não ter mais dinheiro.",
+      "VIII. Tentar compensar as perdas de apostas ou se livrar de dificuldades econômicas através de apostas.",
+    content16: "IX. Continuar apostando até não ter mais dinheiro.",
     content17:
-      "10. Pedir dinheiro emprestado, vender propriedades ou deixar de pagar contas para apostar.",
+      "X. Pedir dinheiro emprestado, vender propriedades ou deixar de pagar contas para apostar.",
     content18:
-      "11. Necessidade de emoção ou prazer com apostas altas ou apostas prolongadas.",
+      "XI. Necessidade de emoção ou prazer com apostas altas ou apostas prolongadas.",
     content19:
-      "12. Descuidar do trabalho, estudos, família, necessidades pessoais ou obrigações familiares por causa das apostas.",
-    content20: "13. Sentir-se ansioso, culpado, deprimido ou irritado.",
+      "XII. Descuidar do trabalho, estudos, família, necessidades pessoais ou obrigações familiares por causa das apostas.",
+    content20: "XIII. Sentir-se ansioso, culpado, deprimido ou irritado.",
     content21:
       "Se você se identifica com um ou mais desses sinais, pode estar enfrentando um problema com jogos de azar. Além disso, se você está preocupado(a) que o jogo possa ter tomado conta da sua vida ou da vida de alguém, existem ajudas disponíveis. Para falar com alguém sobre isso, há várias Organizações de Suporte disponíveis que oferecem conselhos gratuitos e independentes. Recomendamos que você procure assistência de uma dessas organizações reconhecidas:",
     title3: "3. Associações de jogos de azar anônimas:",
@@ -707,6 +709,9 @@ export default {
     expired: "Expirado",
     cancelled: "Cancelado",
     awardCenter: "Centro de Prêmios",
+    redeemBonus:
+      "Você tem certeza de que deseja resgatar o bônus da atividade?",
+    activityBonus: "Bônus de atividade",
   },
   gameLobby: {
     maintence: "manutenção",
@@ -775,7 +780,7 @@ export default {
   提款: "Sacar",
   交易紀錄: "Transações",
   提款確認: "Confirmar retirada",
-  新增PIX: "PIX",
+  新增PIX: "Adicionar PIX",
   提款管理: "Configuração",
   編輯GCash: "Editar GCash",
   安全設置: "Senha",
@@ -835,7 +840,7 @@ export default {
   請輸入手機號碼: "Por favor, insira o número de telefone.",
   請選擇Type: "Por favor, selecione o tipo.",
   請輸入PIXKey: "Por favor, insira a chave PIX.",
-  熱門: "HOT",
+  熱門: "QUENTE",
   註冊登入: "Entrar／Registrar-se",
   帳號密碼不正確: "Nome de usuário ou senha incorretos.",
   帳戶可使用: "Conta está usável",
@@ -855,20 +860,6 @@ export default {
   此密碼將用於提款: "Esta senha será usada para saques.",
   賭神獎池彩金: "Melhor jogadores JP",
   回首頁: "Retornar",
-  // 全部: "全部",
-  // 可領取: "可領取",
-  // 已領取: "已領取",
-  // 已過期: "已過期",
-  // 已取消: "已取消",
-  // Bonus: "Bonus",
-  // Claimed: "Claimed",
-  // Expired: "Expired",
-  // Canceled: "Canceled",
-  // "completion Deadline": "completion Deadline",
-  // "Redeem Threshold": "Redeem Threshold",
-  // "Post-Redeem Threshold": "Post-Redeem Threshold",
-  // "Already received similar bonuses": "Already received similar bonuses",
-  // "Claim Deadline": "Claim Deadline",
   全部: "Todos",
   可領取: "Disponível para resgate",
   已領取: "Resgatado",
@@ -884,7 +875,7 @@ export default {
   "Already received similar bonuses": "Já foram recebidos bônus similares",
   "Claim Deadline": "Tempo restante para resgate",
   "No Data": "Sem dados",
-  CLAIM: "Receber",
+  CLAIM: "Disponível para resgate",
   "邀請好友 ": "Convide Amigos",
   返利總計: "Reembolso Total",
   好友列表: "Lista De Amigos",
@@ -897,4 +888,35 @@ export default {
   新交易密碼: "Nova senha de transação",
   新: "NOVO",
   返回: "Voltar",
+  "已提出提款請求，等待資金發放批准。":
+    "Solicitação de saque feita, aguardando aprovação para liberação dos fundos.",
+  好友帳號: "Conta de amigos",
+  總存款: "Depósito total",
+  有效投注: "Apostas válidas",
+  好友存款返利: "Bônus amigo depósito",
+  好友投注返利: "Bônus amigo apostas",
+  返利: "Reembolso recebido",
+  複製成功: "URL copiado",
+  下載成功: "Imagem baixada",
+  更多遊戲: "Ver todos",
+  線上客服: "Suporte",
+  crash: "Crash",
+  // slot: "Caça-níqueis",
+  slot: "Slots",
+  fishing: "Peixe",
+  casino: "Cassino",
+  blockchain: "Blockchain",
+  bingo: "Bingo",
+  live: "Ao Vivo",
+  poker: "Pôquer",
+  請選擇PIX: "Por favor, selecione o PIX",
+  錢包餘額: "Saldo da carteira",
+  已更改交易密碼: "A senha de transação foi alterada.",
+  更改交易密碼: "A senha da transação foi alterada.",
+  "Q&A": "Perguntas e Respostas",
+  請先設定交易密碼: "Por favor, defina a senha da transação primeiro",
+  存款範圍: "depósito único",
+  紅利: "Valor do bônus",
+  提款流水倍數: "Requisito de apostas para saque",
+  系統維護中: "Sistema em Manutenção",
 };

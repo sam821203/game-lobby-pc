@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
   position: relative;
   border: 0;
   cursor: pointer;
-  background-color: transparent;
+  background: transparent;
   top: 10%;
   font-size: 50%;
   img {
@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
 }
 
 .state {
-  background-color: transparent;
+  background: transparent;
   color: white;
   text-shadow: 1px 0 0.3em #000, 1px 0 0.3em #000, 1px 0 0.3em #000,
     1px 0 0.3em #000;

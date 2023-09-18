@@ -1,6 +1,6 @@
 <template>
   <div class="operationWrap">
-    <div class="navbar">
+    <!-- <div class="navbar">
       <img
         src="@/assets/images/modal/list_open2.png"
         alt=""
@@ -8,23 +8,24 @@
         @click="router.go(-1)"
       />
       <h2 class="title">{{ $t(routeName) }}</h2>
-    </div>
+    </div> -->
     <main class="main">
       <router-view />
     </main>
+    <FooterComp />
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+// import { computed } from "vue";
+// import { useRoute, useRouter } from "vue-router";
 import Footer from "./components/footer.vue";
+import FooterComp from "@/layouts/components/footerComp.vue";
+// const route = useRoute();
+// const router = useRouter();
 
-const route = useRoute();
-const router = useRouter();
-
-const routeName = computed(() => route.meta.name);
+// const routeName = computed(() => route.meta.name);
 </script>
 
 <style lang="scss" scoped>
@@ -56,7 +57,7 @@ const routeName = computed(() => route.meta.name);
     }
   }
   .main {
-    margin-top: 4rem;
+    margin-top: 3.5rem;
     // margin-bottom: 6rem;
     padding-bottom: 6rem;
     // padding: 2rem 1.5rem;

@@ -7,7 +7,7 @@
 <script setup>
 defineProps({
   mode: {
-    type: String,
+    type: [Number, String],
     required: false,
     default: null,
   },
@@ -24,7 +24,7 @@ defineProps({
 }
 
 .rounded {
-  background-color: $modal-key;
+  background: $modal-key;
   border-radius: $border-radius-md;
 }
 </style>

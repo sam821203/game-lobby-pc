@@ -13,6 +13,7 @@
                 'rankContent',
                 `rankContent${v.top_n}`,
                 { list: v.top_n > 3 },
+                { lessThan3: v.top_n === 2 && flowData.length === 2 },
               ]"
               v-if="k < 3"
             >
@@ -26,20 +27,19 @@
                     "
                   />
                 </div>
+
                 <span
-                  v-sliceAccount:[3]="v.account"
-                  v-if="v.nickname !== userInfo.nickname"
-                  class="acc"
-                ></span>
-                <span v-else>{{ v.account }}</span>
-                <div class="vipWrap">
+                  :class="['acc', { player: v.account === userInfo.account }]"
+                  >{{ v.account }}</span
+                >
+                <!-- <div class="vipWrap">
                   <img
                     src="@/assets/images/lobby/vip_icon.png"
                     alt="vip"
                     class="vip"
                   />
                   <span>VIP1</span>
-                </div>
+                </div> -->
                 <span class="score">
                   {{ (v.socre / 10000).toFixed(2) }}
                 </span>
@@ -62,26 +62,42 @@
               <div :class="['rank', { topRank: v.top_n < 4 }]">
                 <span>{{ v.top_n }}</span>
               </div>
+
               <span
-                v-sliceAccount:[3]="v.account"
-                v-if="v.nickname !== userInfo.nickname"
-                class="acc"
-              ></span>
-              <span v-else>{{ v.account }}</span>
-              <div class="vipWrap">
+                :class="['acc', { player: v.account === userInfo.account }]"
+                >{{ v.account }}</span
+              >
+              <!-- <div class="vipWrap">
                 <img
                   src="@/assets/images/lobby/vip_icon.png"
                   alt="vip"
                   class="vip"
                 />
                 <span>VIP1</span>
-              </div>
+              </div> -->
               <span class="score">
                 {{ (v.socre / 10000).toFixed(2) }}
               </span>
             </div>
           </div>
         </template>
+      </div>
+      <div class="rankContentBottom" v-if="flowPersonalData">
+        <!-- &&getPlayerId() != undefined -->
+        <div class="first">
+          <!-- <span>{{ $t("board.myRanking") }}:</span> -->
+
+          <span>{{
+            flowPersonalData.top_n == -1 ? "-" : flowPersonalData.top_n
+          }}</span>
+        </div>
+        <div class="second">
+          {{ flowPersonalData.account }}
+        </div>
+        <div class="third">
+          <!-- {{ personalData.top_n == -1 ? "-" : personalData.socre / 10000 }} -->
+          {{ (flowPersonalData.socre / 10000).toFixed(2) }}
+        </div>
       </div>
     </div>
     <div class="rightLB">
@@ -97,6 +113,7 @@
                 'rankContent',
                 `rankContent${v.top_n}`,
                 { list: v.top_n > 3 },
+                { lessThan3: v.top_n === 2 && inviteData.length === 2 },
               ]"
               :key="k"
               v-if="k < 3"
@@ -113,20 +130,19 @@
                   />
                   <span v-else>{{ v.top_n }}</span>
                 </div>
+
                 <span
-                  v-sliceAccount:[3]="v.account"
-                  v-if="v.nickname !== userInfo.nickname"
-                  class="acc"
-                ></span>
-                <span v-else>{{ v.account }}</span>
-                <div class="vipWrap">
+                  :class="['acc', { player: v.account === userInfo.account }]"
+                  >{{ v.account }}</span
+                >
+                <!-- <div class="vipWrap">
                   <img
                     src="@/assets/images/lobby/vip_icon.png"
                     alt="vip"
                     class="vip"
                   />
                   <span>VIP1</span>
-                </div>
+                </div> -->
                 <span class="score">
                   {{ (v.socre / 10000).toFixed(2) }}
                 </span>
@@ -156,20 +172,19 @@
                 />
                 <span v-else>{{ v.top_n }}</span>
               </div>
+
               <span
-                v-sliceAccount:[3]="v.account"
-                v-if="v.nickname !== userInfo.nickname"
-                class="acc"
-              ></span>
-              <span v-else>{{ v.account }}</span>
-              <div class="vipWrap">
+                :class="['acc', { player: v.account === userInfo.account }]"
+                >{{ v.account }}</span
+              >
+              <!-- <div class="vipWrap">
                 <img
                   src="@/assets/images/lobby/vip_icon.png"
                   alt="vip"
                   class="vip"
                 />
                 <span>VIP1</span>
-              </div>
+              </div> -->
               <span class="score">
                 {{ (v.socre / 10000).toFixed(2) }}
               </span>
@@ -177,31 +192,57 @@
           </div>
         </template>
       </div>
+      <div class="rankContentBottom" v-if="invitePersonalData">
+        <!-- &&getPlayerId() != undefined -->
+        <div class="first">
+          <span>{{
+            invitePersonalData.top_n == -1 ? "-" : invitePersonalData.top_n
+          }}</span>
+          <!-- <img src="@/assets/images/lobby/vip_icon.png" alt="vip" class="vip" />
+          <span>VIP{{ invitePersonalData.top_n }}</span> -->
+        </div>
+        <div class="second">
+          {{ invitePersonalData.account }}
+        </div>
+        <div class="third">
+          <!-- {{ personalData.top_n == -1 ? "-" : personalData.socre / 10000 }} -->
+          {{ (invitePersonalData.socre / 10000).toFixed(2) }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { leaderBoardApi } from "@/api/info";
 import { getNormalUser } from "@/utils/cookie";
 import { storeToRefs } from "pinia";
-
 import { useStore } from "@/store";
 const { useAuth } = useStore();
 const authStore = useAuth();
 const { userInfo } = storeToRefs(authStore);
 const inviteData = ref([]);
-const personalData = ref([]);
+const invitePersonalData = ref([]);
+const flowPersonalData = ref([]);
 const flowData = ref([]);
+watch(userInfo, (val) => {
+  if (!val) {
+    invitePersonalData.value = null;
+    flowPersonalData.value = null;
+  }
+});
 const getInviteData = async () => {
   const { data } = await leaderBoardApi(
     "invite",
     getNormalUser() ? JSON.parse(getNormalUser()).user_id : ""
   );
-  personalData.value = data.data.caller_rank;
+
+  if (userInfo.value) {
+    invitePersonalData.value = data.data.caller_rank;
+  }
+
   inviteData.value = data.data.rank;
-  console.log(inviteData.value);
 };
 
 const getFlowData = async () => {
@@ -209,9 +250,11 @@ const getFlowData = async () => {
     "flow",
     getNormalUser() ? JSON.parse(getNormalUser()).user_id : ""
   );
-  personalData.value = data.data.caller_rank;
+
+  if (userInfo.value) {
+    flowPersonalData.value = data.data.caller_rank;
+  }
   flowData.value = data.data.rank;
-  console.log(flowData.value);
 };
 
 onMounted(() => {
@@ -222,7 +265,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .leaderBoardWrap {
-  // background: red;
   display: flex;
   text-align: center;
   padding: 10px;
@@ -232,9 +274,8 @@ onMounted(() => {
     margin-right: 5px;
     position: relative;
     width: calc(100% - 10px);
-    // background-image: url("@/assets/images/leaderBoard/flat2.png");
-    // background-size: 100% 100%;
-
+    background: $leaderBoard-content-bg;
+    border-radius: 20px;
     .leftBoardName,
     .rightBoardName {
       width: calc(100%);
@@ -245,12 +286,7 @@ onMounted(() => {
       justify-content: space-between;
       align-items: end;
       border-radius: 20px 20px 0 0;
-      background: rgb(73, 56, 96);
-      background: linear-gradient(
-        90deg,
-        rgba(73, 56, 96, 1) 0%,
-        rgba(40, 32, 48, 1) 100%
-      );
+      background: $leaderBoard-title-bg;
       // @include breakpoint-up("xs") {
       //   height: 1rem;
       // }
@@ -272,7 +308,7 @@ onMounted(() => {
       .left {
         height: 100%;
         font-size: 1.5rem;
-        color: #af41ca;
+        color: rgb(220, 195, 255);
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -299,143 +335,160 @@ onMounted(() => {
         height: 100%;
         display: flex;
         align-items: center;
-        color: #a6a6a6;
+        color: #fff;
       }
     }
     .scroll {
       height: 540px;
       padding-bottom: 1rem;
-      overflow-y: auto;
-      // @include breakpoint-up("lg") {
-      //   margin-top: 60%;
-      //   font-size: 0.8rem;
-      // }
-      // @include breakpoint-up("xl") {
-      //   margin-top: 50%;
-      //   font-size: 1rem;
-      // }
-      // @include breakpoint-up("xxl") {
-      //   margin-top: 45%;
-      //   font-size: 1rem;
-      // }
+      overflow-y: scroll;
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        background: $scrollbar-track-bg;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-bg;
+        // border-radius: 20px;
+      }
+      &::-webkit-scrollbar-button {
+        // background: transparent;
+      }
+
       .top3 {
         height: 200px;
         position: relative;
         display: flex;
         justify-content: space-around;
         align-items: center;
-      }
-    }
-    .rankContent {
-      color: #5a5a5a;
-      position: relative;
-    }
-    .rankContent1,
-    .rankContent2,
-    .rankContent3 {
-      background-image: url("@/assets/images/leaderBoard/ranking_box.png");
-      background-size: 100% 100%;
-      width: 122px;
-      height: 158px;
-      @include breakpoint-up("xs") {
-        width: 92px;
-        height: 119px;
-      }
-      @include breakpoint-up("lg") {
-        width: 122px;
-        height: 158px;
-      }
-      @include breakpoint-up("xl") {
-        width: 122px;
-        height: 158px;
-      }
-      @include breakpoint-up("xxl") {
-        width: 122px;
-        height: 158px;
-      }
-      .first {
-        .topRank {
-          img {
-            width: 30%;
-            position: absolute;
-            left: -8%;
-            top: -8%;
+        .rankContent {
+          color: #5a5a5a;
+          position: relative;
+        }
+        .rankContent1,
+        .rankContent2,
+        .rankContent3 {
+          background-image: url("@/assets/images/leaderBoard/ranking_box.png");
+          background-size: 100% 100%;
+          width: 122px;
+          height: 158px;
+          @include breakpoint-up("xs") {
+            width: 92px;
+            height: 119px;
+          }
+          @include breakpoint-up("lg") {
+            width: 122px;
+            height: 158px;
+          }
+          @include breakpoint-up("xl") {
+            width: 122px;
+            height: 158px;
+          }
+          @include breakpoint-up("xxl") {
+            width: 122px;
+            height: 158px;
+          }
+          .first {
+            .topRank {
+              img {
+                width: 30%;
+                position: absolute;
+                left: -8%;
+                top: -8%;
+              }
+            }
+            .acc {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              top: 45%;
+              color: #fff;
+            }
+            .player {
+              color: gray;
+            }
+            .vipWrap {
+              position: absolute;
+              bottom: 33%;
+              display: flex;
+              justify-content: space-evenly;
+              align-items: baseline;
+              width: 55%;
+              left: 50%;
+              transform: translate(-50%);
+              .vip {
+                width: 20px;
+              }
+              span {
+                @include breakpoint-up("md") {
+                  font-size: 12px;
+                }
+                @include breakpoint-up("xxl") {
+                  font-size: 15px;
+                }
+                color: $error-color;
+              }
+            }
+            .score {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              bottom: 20%;
+            }
           }
         }
-        .acc {
+
+        .rankContent1 {
           position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-          top: 45%;
+          top: calc(50%);
+          transform: translateY(-50%);
+          // top: 13%;
+          // left: 50%;
+          // transform: translateX(-50%);
+          .first {
+            .score {
+              color: yellow;
+              font-weight: 600;
+            }
+          }
+        }
+        .rankContent2 {
+          // position: absolute;
+          // left: 10%;
+          // top: 18%;
+          margin-right: 61px;
+          margin-top: 2rem;
+          .first {
+            .score {
+              color: lightgray;
+              font-weight: 600;
+            }
+          }
+        }
+        .lessThan3 {
+          margin-right: 350px;
+        }
+        .rankContent3 {
+          // position: absolute;
+          // right: 10%;
+          // top: 18%;
+          margin-left: 61px;
+          margin-top: 2rem;
+          .first {
+            .score {
+              color: darkorange;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+
+    .rankContent4 {
+      .first {
+        .rank {
           color: #fff;
-        }
-        .vipWrap {
-          position: absolute;
-          bottom: 33%;
-          display: flex;
-          justify-content: space-evenly;
-          align-items: baseline;
-          width: 55%;
-          left: 50%;
-          transform: translate(-50%);
-          .vip {
-            width: 20px;
-          }
-          span {
-            @include breakpoint-up("md") {
-              font-size: 12px;
-            }
-            @include breakpoint-up("xxl") {
-              font-size: 15px;
-            }
-            color: red;
-          }
-        }
-        .score {
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-          bottom: 20%;
-        }
-      }
-    }
-    .rankContent1 {
-      position: absolute;
-      top: calc(50%);
-      transform: translateY(-50%);
-      // top: 13%;
-      // left: 50%;
-      // transform: translateX(-50%);
-      .first {
-        .score {
-          color: yellow;
-          font-weight: 600;
-        }
-      }
-    }
-    .rankContent2 {
-      // position: absolute;
-      // left: 10%;
-      // top: 18%;
-      margin-right: 61px;
-      margin-top: 2rem;
-      .first {
-        .score {
-          color: lightgray;
-          font-weight: 600;
-        }
-      }
-    }
-    .rankContent3 {
-      // position: absolute;
-      // right: 10%;
-      // top: 18%;
-      margin-left: 61px;
-      margin-top: 2rem;
-      .first {
-        .score {
-          color: darkorange;
-          font-weight: 600;
         }
       }
     }
@@ -482,6 +535,35 @@ onMounted(() => {
         }
       }
     }
+    .rankContentBottom {
+      // display: flex;
+      // justify-content: space-between;
+      // margin: 0 auto;
+      // height: 3.5rem;
+      // line-height: 3.5rem;
+      // width: 90%;
+      margin: 2%;
+      border-top: 1px solid #efe095;
+      width: 90%;
+      margin: 0 auto 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      border-radius: 0 0 10px 10px;
+      padding: 2.2%;
+      color: #efe095;
+      .second {
+        display: inline-block;
+        width: 200px;
+        text-align: start;
+        // margin-left: -10%;
+      }
+      .third {
+        width: 200px;
+        display: inline-block;
+        text-align: end;
+      }
+    }
 
     .list {
       height: 45px;
@@ -491,12 +573,18 @@ onMounted(() => {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        border-radius: 10px;
+        border-radius: $border-radius-md;
         padding: 2.2%;
 
         .acc {
-          margin-left: -30%;
+          display: inline-block;
+          width: 200px;
+          text-align: start;
+          // margin-left: -10%;
           color: #fff;
+        }
+        .player {
+          color: gray;
         }
         .vipWrap {
           position: absolute;
@@ -507,15 +595,18 @@ onMounted(() => {
           }
           span {
             margin-left: 2%;
-            color: red;
+            color: $error-color;
           }
         }
         .score {
+          width: 200px;
+          display: inline-block;
+          text-align: end;
           color: yellow;
         }
       }
       .even {
-        background: black;
+        background: $leaderBoard-table-even-bg;
       }
     }
   }

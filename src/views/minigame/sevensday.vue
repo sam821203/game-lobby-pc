@@ -56,8 +56,6 @@ const openGame = async () => {
       isBtnOff.value = true;
       const bgm = ref(bgmSound.value);
       let url = `${process.env.VUE_APP_GAME}/Activity_SevensDay?result=${result.value}&sound=${bgm.value}`;
-      // url = url + result.value;
-      console.log(url, "url");
       emit("opengame", url);
     }
   } else {
@@ -194,7 +192,7 @@ onBeforeUnmount(() => {
   top: 10%;
   border: 0;
   cursor: pointer;
-  background-color: transparent;
+  background: transparent;
   font-size: 50%;
   img {
     object-fit: contain;
@@ -209,7 +207,7 @@ onBeforeUnmount(() => {
 }
 
 .state {
-  background-color: transparent;
+  background: transparent;
   color: white;
   text-shadow: 1px 0 0.3em #000, 1px 0 0.3em #000, 1px 0 0.3em #000,
     1px 0 0.3em #000;

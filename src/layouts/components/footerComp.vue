@@ -36,7 +36,7 @@
           class="fb"
           @click="
             openWebsite(
-              'https://www.facebook.com/profile.php?id=100093583872322'
+              'https://www.facebook.com/profile.php?id=100095419832273'
             )
           "
         />
@@ -56,7 +56,7 @@
     <div class="part2">
       <img
         :src="require(`@/assets/images/statement/${k}.png`)"
-        v-for="(v, k) in 9"
+        v-for="(v, k) in 11"
         :key="k"
       />
     </div>
@@ -94,7 +94,7 @@ const openWebsite = (url) => {
 .footerWrap {
   padding: 2% 5%;
   text-align: center;
-  background-color: #212529;
+  // background-color: $leaderBoard-content-bg;
   .part1 {
     border-bottom: 1px solid #999999;
     padding-bottom: 2%;
@@ -119,11 +119,12 @@ const openWebsite = (url) => {
   }
   .part2 {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    flex-wrap: wrap;
     padding: 2% 0;
     border-bottom: 1px solid #999999;
     img {
-      width: 10%;
+      width: 11%;
     }
   }
 

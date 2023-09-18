@@ -41,14 +41,13 @@ defineProps({
   margin-bottom: 12px;
   img {
     width: 36px;
-    margin-left: 24px;
     margin-right: 8px;
   }
   div {
     font-size: 20px;
     font-weight: bold;
     line-height: 160%;
-    color: $primary-title;
+    color: $title;
   }
 }
 </style>

@@ -130,7 +130,7 @@ import {
   reactive,
   watch,
 } from "vue";
-import { getGameListApi, getGameUrlApi, checkWallet } from "@/api/game";
+import { getGameListApi, getGameUrlApi } from "@/api/game";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "@/store/index";
 import { storeToRefs } from "pinia";
@@ -139,6 +139,7 @@ import loading from "@/components/loading";
 import { useI18n } from "vue-i18n";
 import { usectrlLogin } from "@/store/ctrlLogin";
 
+const { depositPageStatus } = storeToRefs(usectrlLogin());
 const { t } = useI18n();
 
 const { useGame, useAuth, useMessage, useSounds } = useStore();
@@ -209,6 +210,8 @@ const totalStudios = ref([
   "pg",
   "facai",
   "jili",
+  "mgplus",
+  "PP",
 ]);
 const studioAry = ref([
   "funky",
@@ -218,6 +221,8 @@ const studioAry = ref([
   "pg",
   "facai",
   "jili",
+  "mgplus",
+  "PP",
 ]);
 
 const gameListParams = ref({
@@ -230,23 +235,53 @@ const gameListParams = ref({
 let listTotal = 1;
 const isLoading = ref(true);
 const gameListRes = ref(null);
+// 0911
 const getGameListHanlder = async (gameListParams, filter, re = false) => {
-  gameList.value = [];
-  if (gameList.value.length >= listTotal && listTotal > 0) return;
-  isLoading.value = true;
-  let { category, limit, offset, studio } = gameListParams;
-  gameListRes.value = await getGameListApi({ category, limit, offset, studio });
-  listTotal = gameListRes.value.data.data.total;
-  gameList.value.push(...gameListRes.value.data.data.games);
-  isLoading.value = false;
-  if (filter) {
+  // 若re=true，先搜尋"全部"，再分類
+  if (!re) {
+    if (gameList.value.length >= listTotal && listTotal > 0) {
+      return;
+    }
+    isLoading.value = true;
+    let { category, limit, offset, studio } = gameListParams;
+    gameListRes.value = await getGameListApi({
+      category,
+      limit,
+      offset,
+      studio,
+    });
+    listTotal = gameListRes.value.data.data.total;
+    gameList.value.push(...gameListRes.value.data.data.games);
+    isLoading.value = false;
+    if (filter) {
+      changeStudioList();
+    }
+  } else {
+    isLoading.value = true;
+    // 先撈全部
+    let { category, limit, offset } = gameListParams;
+    gameListRes.value = await getGameListApi({
+      category,
+      limit,
+      offset,
+      studio: "",
+    });
+    listTotal = gameListRes.value.data.data.total;
+    gameList.value.push(...gameListRes.value.data.data.games);
+    // 先得到分類(完整分類)
     changeStudioList();
+    // 然後清空 一些數據
+    gameList.value = [];
+    listTotal = 0;
+    // 重新讀
+    await getGameListHanlder(gameListParams, false);
   }
-  if (re && filter) {
-    let tmpgameListParams = gameListParams;
-    tmpgameListParams.studio = studioType.value;
-    await getGameListHanlder(tmpgameListParams, false);
-  }
+
+  // if (re && filter) {
+  //   let tmpgameListParams = gameListParams;
+  //   tmpgameListParams.studio = studioType.value;
+  //   await getGameListHanlder(tmpgameListParams, false);
+  // }
 };
 
 const changeStudioList = async () => {
@@ -301,29 +336,29 @@ const throttleScroll = throttle(
 
 onMounted(() => {
   // 一進入遊戲大廳
-  if (token.value) {
-    checkWallet();
-  }
   lazyloadingHandler.openListener();
   // gameListParams["studio"] = ""; //預設搜尋全部
   // target.value.studio = ""; //預設搜尋全部
-  // 222
   gameListParams.value = {
     category: categoryTans(categoryType.value),
     limit: 50,
     offset: 0,
-    studio: "",
-    // studio: studioType.value,
+    studio: studioType.value,
   };
+  if (studioType.value == "") {
+    filter.value = true;
+  } else {
+    filter.value = false;
+  }
   getGameListHanlder(gameListParams.value, filter.value, true);
 });
 watch(route, (v) => {
   // 在遊戲大廳內
   // route是在遊戲大廳，且參數變的時候，變更搜索項目
-  // gameList.value = [];
   // gameListParams[key] = key === "category" || "" ? categoryTans(type) : type;
   // gameListParams.offset = 0;
   if (v.name === "gameLobby") {
+    gameList.value = [];
     lazyloadingHandler.openListener();
 
     gameListParams.value = {
@@ -338,18 +373,7 @@ watch(route, (v) => {
     } else {
       filter.value = false;
     }
-
-    if (!filter.value && v.query.re) {
-      gameListParams.value = {
-        category: categoryTans(categoryType.value),
-        limit: 50,
-        offset: 0,
-        studio: "",
-      };
-      getGameListHanlder(gameListParams.value, true, v.query.re);
-    } else {
-      getGameListHanlder(gameListParams.value, filter.value, v.query.re);
-    }
+    getGameListHanlder(gameListParams.value, filter.value, true);
   }
 });
 onBeforeUnmount(() => {
@@ -391,7 +415,7 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
       joinGame: true,
     })
       .then(() => {
-        router.push("/deposit/deposit");
+        depositPageStatus.value = true;
       })
       .catch(() => {
         console.log("繼續遊戲");
@@ -432,17 +456,9 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
   padding-top: 10px;
   overflow-y: auto;
   .optionBar {
-    // position: sticky;
     height: 150px;
     top: 0rem;
     left: 0;
-    // z-index: 10;
-    // background: #fff;
-    background: #23003e;
-    // &.notLogin {
-    //   top: $notLogin-topBar-height;
-    // }
-
     .gameTypeWrap {
       width: 100%;
       height: 90px;
@@ -465,13 +481,12 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
     .firmWrap {
       width: calc(100% - 4px);
       height: calc(60px - 2px - 4px);
-      border: 2px solid gray;
+      // border: 2px solid gray;
       padding: 1px 0 1px 0px;
       margin-top: 0.5rem;
       border-radius: 60px;
       overflow-x: auto;
       white-space: nowrap;
-      background: black;
       .firmItem {
         display: inline-block;
         position: relative;
@@ -480,9 +495,6 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
         background-position: center;
         padding: 2px 1px;
         height: calc(100% - 2px);
-        &.selected {
-          // background-image: url("@/assets/images/game/select_box.png");
-        }
         .studioIcon {
           height: 100%;
           object-fit: contain;
@@ -491,7 +503,6 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
     }
   }
   .noticeChooseType {
-    // background: red;
     display: flex;
     align-items: center;
     padding: 0.5rem 0.5rem;
@@ -504,9 +515,6 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
   }
   .gameWrap {
     width: calc(100%);
-    // background: red;
-    // display: flex;
-    // flex-wrap: wrap;
     margin-top: 10px;
     font-size: 0;
     overflow-x: hidden;
@@ -518,21 +526,24 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
       margin-right: 5px;
       margin-left: 5px;
       position: relative;
-      @include breakpoint-up("xs") {
-        width: calc(50% - 10px);
-      }
-      // @include breakpoint-up("sm") {
+      width: 140px;
+      // @include breakpoint-up("xs") {
       //   width: calc(50% - 10px);
+      //   // width: calc(8% - 10px);
       // }
-      @include breakpoint-up("md") {
-        width: calc(33% - 10px);
-      }
-      // @include breakpoint-up("lg") {
+      // // @include breakpoint-up("sm") {
+      // //   width: calc(50% - 10px);
+      // // }
+      // @include breakpoint-up("md") {
+      //   // width:  calc(33% - 10px);
       //   width: calc(33% - 10px);
       // }
-      @include breakpoint-up("xl") {
-        width: calc(20% - 10px);
-      }
+      // // @include breakpoint-up("lg") {
+      // //   width: calc(33% - 10px);
+      // // }
+      // @include breakpoint-up("xl") {
+      //   width: calc(20% - 10px);
+      // }
       // @include breakpoint-up("xxl") {
       //   width: calc(20% - 10px);
       // }
@@ -542,7 +553,7 @@ const enterGame = async ({ gameId, studio = "", forbind, comingsoon }) => {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: $popout-page-bg;
         z-index: 1;
         display: flex;
         justify-content: center;

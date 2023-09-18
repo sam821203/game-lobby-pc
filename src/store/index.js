@@ -10,6 +10,7 @@ import { useDeposit } from "./depositStore";
 import { useAnnouncement } from "./announcementStore";
 import { useMinigame } from "./minigameStore";
 import { useSounds } from "./soundsStore";
+import { useActivityList } from "./activityListStore";
 
 export const useStore = () => {
   return {
@@ -24,6 +25,7 @@ export const useStore = () => {
     useAnnouncement,
     useMinigame,
     useSounds,
+    useActivityList,
   };
 };
 

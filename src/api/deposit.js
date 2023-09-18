@@ -41,10 +41,17 @@ export const getGCashApi = () => {
   });
 };
 
-export const addGCashApi = (phone, data) => {
+export const addGCashApi = (data) => {
   return request()({
-    url: `/bank_account/brapay/${phone}/name`,
+    url: "/bank_account/brapay/name",
     method: "put",
     data,
+  });
+};
+
+export const getEventApi = (id) => {
+  return request()({
+    url: `/event/charge/${id}`,
+    method: "get",
   });
 };

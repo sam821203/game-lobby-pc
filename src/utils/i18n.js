@@ -9,8 +9,8 @@ import br from "@/locale/br";
 export default createI18n({
   legacy: false,
   // locale: getLang("language") || "zhtw", // 设置地区,
-  // locale: "br", // 设置地区,
-  locale: "en", // 设置地区,
+  locale: "br", // 设置地区,
+  // locale: "en", // 设置地区,
   globalInjection: true, // 全域
   fallbackLocale: "zhtw",
   fallbackWarn: false, // 關閉退回本地警告

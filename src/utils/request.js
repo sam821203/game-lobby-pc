@@ -9,10 +9,19 @@ import { useLoading } from "@/store/loadingStore";
 import { usectrlLogin } from "@/store/ctrlLogin";
 import { storeToRefs } from "pinia";
 import { usepopoutNotice } from "@/store/popoutNotice";
-const { statusType, statusStr, positionTop, borderType, countDownWidth } =
-  storeToRefs(usepopoutNotice());
+const {
+  statusType,
+  statusStr,
+  positionTop,
+  borderType,
+  countDownWidth,
+  inSlidediv,
+} = storeToRefs(usepopoutNotice());
 const loadingStore = useLoading();
-
+const { withdrawalPage_checkTradePwdStatus } = storeToRefs(usectrlLogin());
+import { useother } from "@/store/other";
+const { withdrawFormErrorText } = storeToRefs(useother());
+//
 const router = () => import("@/router/index");
 const { t } = i18n.global;
 const msg = useMessage(pinia);
@@ -74,15 +83,12 @@ export default (server = "gs") => {
         })
           .then(() => {
             router().then((res) => {
-              console.log("res", res);
-              // res.default.push("/auth/login");
               usectrlLogin().$patch({
                 loginpageStatus: true,
               });
             });
           })
           .catch((err) => {
-            console.log(err);
             router().then((res) => {
               // res.default.push("/auth/login");
               usectrlLogin().$patch({
@@ -91,23 +97,6 @@ export default (server = "gs") => {
             });
           });
         return;
-        // logout();
-        // try {
-        //   await openMsg({
-        //     title: "",
-        //     content: t("此帳號已從別處登入"),
-        //     type: "error",
-        //   }).then(() => {
-        //     router().then((res) => {
-        //       console.log("res", res);
-        //       res.default.push("/auth/login");
-        //     });
-        //   });
-        // } catch (error) {
-        //   router().then((res) => {
-        //     res.default.push("/auth/login");
-        //   });
-        // }
       }
       return response;
     },
@@ -116,7 +105,6 @@ export default (server = "gs") => {
         loadingStatus: false,
       });
       if (error.response.data.code === 700004) {
-        console.log(error);
         return;
       }
       // 提款次數錯誤處理
@@ -129,58 +117,35 @@ export default (server = "gs") => {
         return;
       }
       if (
-        error.response.data.code === 200004 ||
         error.response.data.code === 300001 ||
         error.response.data.code === 700003
       ) {
         // kickout();
-        // 回主頁
-        openMsg({
-          title: "",
-          content: error.response.data.msg,
-          type: "error",
-        })
-          .then(() => {
-            router().then((res) => {
-              console.log("res", res);
-              res.default.push("/");
-            });
+        if (withdrawalPage_checkTradePwdStatus.value) {
+          withdrawFormErrorText.value = error.response.data.msg;
+        } else {
+          // 回主頁
+          openMsg({
+            title: "",
+            content: error.response.data.msg,
+            type: "error",
           })
-          .catch((err) => {
-            console.log(err);
-            router().then((res) => {
-              res.default.push("/");
+            .then(() => {
+              router().then((res) => {
+                res.default.push("/");
+              });
+            })
+            .catch((err) => {
+              router().then((res) => {
+                res.default.push("/");
+              });
             });
-          });
+        }
+
         return;
       }
       if (error.response.data.code === 200003) {
-        // kickout();
-        // 回主頁
         logout();
-        openMsg({
-          title: "",
-          content: error.response.data.msg,
-          type: "error",
-        })
-          .then(() => {
-            router().then((res) => {
-              console.log("res", res);
-              // res.default.push("/auth/login");
-              usectrlLogin().$patch({
-                loginpageStatus: true,
-              });
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            router().then((res) => {
-              // res.default.push("/auth/login");
-              usectrlLogin().$patch({
-                loginpageStatus: true,
-              });
-            });
-          });
         return;
       }
 
@@ -196,22 +161,12 @@ export default (server = "gs") => {
 
       if (error.response.data.code === 100002) {
         // kickout();
-        openMsg({
-          title: "",
-          content: error.response.data.msg,
-          type: "error",
-        })
-          .then(() => {
-            router().then((res) => {
-              res.default.push("/");
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            router().then((res) => {
-              res.default.push("/");
-            });
-          });
+        statusType.value = 1;
+        statusStr.value = t(error.response.data.msg);
+        positionTop.value = "10px";
+        borderType.value = 1;
+        countDownWidth.value = 100;
+        inSlidediv.value = true;
         return;
       }
 
@@ -226,29 +181,30 @@ export default (server = "gs") => {
               registrations.forEach((registration) => {
                 registration.unregister();
               });
-              // kickout();
               location.reload();
             });
           })
           .catch((err) => {
-            console.log(err);
             navigator.serviceWorker.getRegistrations().then((registrations) => {
               registrations.forEach((registration) => {
                 registration.unregister();
               });
-              // kickout();
               location.reload();
             });
           });
         return;
       }
 
-      if (error.response.data.code === 200005) {
+      if (
+        error.response.data.code === 200005 || // 登入時密碼錯誤
+        error.response.data.code === 200004 //修改登入原密碼錯誤
+      ) {
         statusType.value = 1;
         statusStr.value = error.response.data.msg;
         positionTop.value = "10px";
         borderType.value = 1;
         countDownWidth.value = 100;
+        inSlidediv.value = true;
         // openMsg({
         //   content: error.response.data.msg,
         // });

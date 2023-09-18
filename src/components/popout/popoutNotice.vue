@@ -1,7 +1,7 @@
 <template>
+  <!-- 登入輸入密碼錯誤時，跳出的警示(或成功) -->
   <!-- == '' ? '10px' : positionTop  -->
   <div
-    v-show="positionTop != ''"
     :style="{ top: positionTop }"
     :class="[
       'popoutNotice',
@@ -18,6 +18,7 @@
       <img
         src="@/assets/images/popoutNotice/success_2.png"
         alt=""
+        class="success"
         v-if="statusType == 2"
       />
       <span>
@@ -58,8 +59,8 @@ const decreaseCountDownWidth = () => {
     thiscountDownWidth.value -= 1;
     if (thiscountDownWidth.value < 0) {
       thiscountDownWidth.value = 0;
-      clearInterval(interval);
       resetpopoutNotice();
+      clearInterval(interval);
     }
   }, 30);
 };
@@ -70,23 +71,21 @@ watch(countDownWidth, (v) => {
     decreaseCountDownWidth();
   }
 });
-onMounted(() => {
-  //   countDown.value = true;
-  //   console.log(statusType);
-});
+onMounted(() => {});
 </script>
 <style lang="scss" scoped>
 .popoutNotice {
   position: absolute;
-  background: $darkpageBottom-color;
+  background: $popoutTop-color;
   left: 50%;
   transform: translateX(-50%);
   height: 3.5rem;
   width: 400px;
   box-sizing: content-box;
   color: white;
-  border-radius: 10px;
+  border-radius: $border-radius-md;
   overflow: hidden;
+  z-index: 3;
   @include breakpoint-up("xs") {
     padding: 0 1rem;
   }
@@ -97,7 +96,7 @@ onMounted(() => {
     border: 1px solid green;
   }
   &.borderRed {
-    border: 1px solid red;
+    border: 1px solid $error-color;
   }
   > .top {
     width: 100%;
@@ -110,6 +109,11 @@ onMounted(() => {
       object-fit: contain;
       margin-right: 0.5rem;
     }
+    .success {
+      height: 40%;
+      object-fit: contain;
+      margin-right: 0.5rem;
+    }
   }
   .bottom {
     position: absolute;
@@ -117,7 +121,6 @@ onMounted(() => {
     height: 5px;
     bottom: 0;
     right: 0;
-    // background: red;
   }
 }
 </style>

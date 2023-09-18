@@ -1,47 +1,23 @@
 <template>
   <ModalLayout :pageHeight="thisHeight">
     <template #title>
-      <p class="title">{{ $t("email.email") }}</p>
+      <p class="titles">{{ $t("email.email") }}</p>
     </template>
     <template #default>
-      <!-- <div class="deleteGroup">
-        <img
-          src="@/assets/images/modal/remind_box.png"
-          alt=""
-          @click="isSelectAll"
-          v-show="selectAll === false"
-          class="checkbox"
-        />
-        <img
-          src="@/assets/images/modal/remind_tick.png"
-          alt=""
-          @click="cancelSelectAll"
-          v-show="selectAll === true"
-          class="checkbox"
-        />
-        <span>全選</span>
-        <img
-          src="@/assets/images/modal/trash_can.png"
-          alt=""
-          :class="['trashCan', { trashCanDisable: !selectList.length }]"
-          @click="deleteMails(selectList)"
-        />
-      </div> -->
+      <!-- 預設樣式， -->
       <ul>
         <li
           v-for="(mail, index) in allMailData"
           :key="mail.id"
           :class="[mail.is_read ? 'isreaded' : 'notread']"
+          @click="readMail(index, mail.id, mail.is_read)"
         >
-          <div class="mail-wrap">
+          <div :class="['mail-wrap', mail.is_read ? 'isreaded' : 'notread']">
             <div :class="['mail-item', { openTitle: showContent === index }]">
               <p class="mail-title">{{ $t(mail.title) }}</p>
             </div>
           </div>
-          <div
-            class="mail-time"
-            @click="readMail(index, mail.id, mail.is_read)"
-          >
+          <div :class="['mail-time', mail.is_read ? 'isreaded' : 'notread']">
             <p v-time="mail.send_at" class="mail-date"></p>
             <div
               :class="[
@@ -52,10 +28,11 @@
               >
             </div>
           </div>
-          <div class="content" :id="mail.id" v-show="showContent === index">
-            <!-- <p class="mail-content">
-              {{ $t(mail.content) }}
-            </p> -->
+          <div
+            :class="['mail-content', mail.is_read ? 'isreaded' : 'notread']"
+            :id="mail.id"
+            v-show="showContent === index"
+          >
             <div v-html="mail.content" class="mail-content"></div>
           </div>
         </li>
@@ -141,7 +118,7 @@ const readMail = async (index, id) => {
     readList.value.push(id);
     await readMailApi({ id: readList.value });
     allMailData.value[index].is_read = true;
-    getMailNotification();
+    getMailNotification(123);
   }
 };
 
@@ -222,14 +199,13 @@ const previousPage = () => {
 </script>
 
 <style lang="scss" scoped>
-.title {
+:deep(.titles) {
   color: $title;
 }
 ul {
   width: 100%;
   height: calc(100% - $title-height);
   padding: 10px 10px 0 10px;
-  // margin: 10px 0;
   overflow-y: auto;
   color: $primary;
   li {
@@ -241,74 +217,40 @@ ul {
     box-sizing: border-box;
     overflow: hidden;
     &.isreaded {
-      border: 2px solid #85639b;
+      border: 2px solid $readed-box-border;
     }
     &.notread {
-      border: 2px solid #383838;
+      border: 2px solid $unread-box-border;
     }
     .mail-wrap {
       width: 100%;
       height: 60px;
       padding: 10px;
       box-sizing: border-box;
-      color: $primary;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: $darkpageTop-color;
-      // .icon-wrap {
-      //   width: 30%;
-      //   display: flex;
-      //   justify-content: flex-end;
-      //   align-items: center;
-      //   .bell {
-      //     width: 50%;
-      //     margin-right: 5%;
-      //     &::before {
-      //       content: "NEW";
-      //       position: absolute;
-      //       z-index: -1;
-      //       -webkit-text-stroke: 3px red;
-      //     }
-      //   }
-      //   .opened {
-      //     width: 25%;
-      //     height: 25%;
-      //   }
-      //   .notOpen {
-      //     width: 25%;
-      //     height: 25%;
-      //     transform: rotate(-90deg);
-      //   }
-      // }
-
-      // .mail-item {
-      //   // color: $title;
-
-      //   .mail-title {
-      //     // color: rgb(41, 73, 87);
-      //     margin: 2% 0;
-      //     padding-bottom: 2%;
-      //     font-size: 1.1rem;
-      //     flex: 1;
-      //   }
-      //   .mail-date {
-      //     color: #b0b0b0;
-      //     font-size: 0.9rem;
-      //   }
-      // }
-      // .openTitle {
-      //   color: $title;
-      // }
+      &.isreaded {
+        color: $readed-box-title-text;
+      }
+      &.notread {
+        color: $unread-box-title-text;
+      }
     }
     .mail-time {
       width: 100%;
       height: 40px;
-      background: $darkpageMiddle-color;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: $popotContent-color;
+      color: $content-text-1;
+      background: $readed-box-content1-bg;
+      &.isreaded {
+        background: $readed-box-content1-bg;
+      }
+      &.notread {
+        background: $unread-box-content1-bg;
+      }
       .mail-date {
         margin-left: 10px;
       }
@@ -318,7 +260,7 @@ ul {
           color: #808080;
         }
         &.notread {
-          color: #a903d2;
+          color: $unread-box-title-text;
         }
       }
       .rotate90 {
@@ -330,15 +272,21 @@ ul {
       font-size: 1rem;
       margin: 0 auto;
       line-height: 1.2rem;
-      background: $darkpageBottom-color;
-      color: $popotContent-color;
+      color: $content-text-1;
+
+      &.isreaded {
+        background: $readed-box-content1-bg;
+      }
+      &.notread {
+        background: $unread-box-content1-bg;
+      }
     }
   }
 }
 .pagination {
   width: 100%;
   height: $title-height;
-  background: $layout-footer-color;
+  background: $popoutBottom-color;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -358,20 +306,20 @@ ul {
     font-weight: 600;
   }
   .pre-button {
-    background: $canclick-pageBtn-color;
+    background: $canclick-pageBtn-bg;
   }
   .next-button {
-    background: $canclick-pageBtn-color;
+    background: $canclick-pageBtn-bg;
   }
   .disableClick {
-    background: $disableClick-page-color;
+    background: $button-disabled-bg;
   }
   .pageNum {
     width: 20%;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: $text-primary;
+    color: $primary;
     .current-page {
       margin-right: 5px;
     }

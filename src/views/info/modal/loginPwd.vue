@@ -82,7 +82,8 @@ import baseInput from "@/components/form/baseInput.vue";
 // import baseButton from "@/components/form/baseButton.vue";
 import { useI18n } from "vue-i18n";
 import { usectrlLogin } from "@/store/ctrlLogin";
-
+import { usepopoutNotice } from "@/store/popoutNotice";
+const { countDownWidth } = storeToRefs(usepopoutNotice());
 const { changeLoginPwd } = storeToRefs(usectrlLogin());
 
 const { t } = useI18n();
@@ -116,34 +117,44 @@ const validationSchema = object({
   newPassword: passwordValidate,
   confirmPassword: confirmPwdValidate("newPassword"),
 });
-
-const { handleSubmit, errors } = useForm({
+// const { resetForm } = useForm();
+const { handleSubmit, errors, resetForm } = useForm({
   validationSchema,
 });
+
 const { value: oldPassword } = useField("oldPassword");
 const { value: newPassword } = useField("newPassword");
 const { value: confirmPassword } = useField("confirmPassword");
 
 const editPassWord = handleSubmit(async (values) => {
   const { oldPassword, newPassword } = values;
-  const res = await editPasswordApi({
-    old_password: oldPassword,
-    new_password: newPassword,
-  });
+  if (countDownWidth.value > 0) {
+    return;
+  }
 
-  if (res.data.code === 0) {
-    try {
-      await openMsg({
-        content: t("openMsg.editPasswordSuccess"),
-      }).then(() => {
-        router.push("/");
-        closeModal();
-      });
-    } catch (error) {
-      openMsg({
-        content: res.data.data.msg,
-      });
-      console.log(error);
+  try {
+    const res = await editPasswordApi({
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
+    if (res.data.code === 0) {
+      try {
+        await openMsg({
+          content: t("openMsg.editPasswordSuccess"),
+        }).then(() => {
+          router.push("/");
+          closeModal();
+        });
+      } catch (error) {
+        openMsg({
+          content: res.data.data.msg,
+        });
+      }
+    }
+  } catch (err) {
+    if (countDownWidth.value > 0) {
+      resetForm();
+      return;
     }
   }
 });

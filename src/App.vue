@@ -11,8 +11,9 @@
     <router-link to="/about">About</router-link>
   </nav> -->
   <div>
+    <!-- <div>{{ routeName === "gameRoom" }}</div> -->
     <Navbar
-      v-if="navStatus"
+      v-if="navStatus && routeName !== 'gameRoom'"
       :listStatus="listStatus"
       v-model:listStatus="listStatus"
       :mylistStatus="mylistStatus"
@@ -31,16 +32,17 @@
       <Modal v-if="isModalOpen" />
     </Teleport>
     <!-- 登入介面 -->
+    <popoutNotice v-show="!inSlidediv && positionTop != ''" />
     <transition name="slide">
       <!-- click常常誤點，所以用point判斷 -->
       <div
         class="slideDiv"
         ref="pageRef"
-        v-if="slideDiv"
+        v-show="slideDiv"
         @pointerdown.self="checkTouchLogin = true"
         @pointerup.self="openLoginpage"
       >
-        <popoutNotice />
+        <popoutNotice v-show="inSlidediv && positionTop != ''" />
         <!-- 登入登出 -->
         <authLayout />
         <!-- 基本資料 -->
@@ -49,6 +51,18 @@
         <loginPwd />
         <!-- 修改交易密碼 -->
         <tradePwd />
+        <!-- 聲音調整 -->
+        <settingBGM />
+        <!-- 存款介面 -->
+        <depositAndWidthdrawPage />
+        <!-- 新增PIX介面 -->
+        <addpixPage />
+        <!-- 交易密碼頁面(提款最後一步驟) -->
+        <withdrawalPage_checkTradePwd />
+        <!-- 邀請好友QRcode -->
+        <inviteFriendsPage />
+        <!-- 好友返利 -->
+        <rebateFormPage />
       </div>
     </transition>
     <!-- 其他介面 -->
@@ -84,10 +98,13 @@ import detailList from "@/layouts/components/detailnavList.vue";
 import detailmyList from "@/layouts/components/detailmyList.vue";
 import MessageComp from "@/components/popout/messageComp.vue";
 import popoutNotice from "@/components/popout/popoutNotice.vue";
+import inviteFriendsPage from "@/components/popout/invite.vue";
+import rebateFormPage from "@/components/popout/rebate.vue";
 import authLayout from "./layouts/authLayout.vue";
 import userInfoView from "@/views/info/userInfo";
 import loginPwd from "@/views/info/modal/loginPwd";
 import tradePwd from "@/views/info/modal/tradePwd";
+import settingBGM from "@/views/setting/sound";
 import { useModal } from "@/store/modalStore";
 import { useMessage } from "@/store/msgStore";
 import { useSounds } from "@/store/soundsStore";
@@ -111,11 +128,16 @@ const { loadingStatus } = storeToRefs(loadingStore);
 const route = useRoute();
 
 import { useStore } from "@/store";
-
+//
+// 存提款
+import addpixPage from "@/views/deposit/addpixPage";
+import withdrawalPage_checkTradePwd from "@/views/deposit/withdrawForm";
+import depositAndWidthdrawPage from "@/views/deposit/depositAndwithdraw";
 // import { useDeposit } from "@/store/depositStore";
 // const depositStore = useDeposit();
 // const { getTime } = depositStore;
 // getTime();
+//
 const modalStore = useModal();
 const messageStore = useMessage();
 const { isModalOpen } = storeToRefs(modalStore);
@@ -131,10 +153,17 @@ const { useAuth } = useStore();
 
 const {
   loginpageStatus,
+  registerpageStatus,
   bgmStatus,
   userInfosetting,
   changeLoginPwd,
   changeTradePwd,
+  depositPageStatus,
+  withdrawalPageStatus,
+  addpixPageStatus,
+  withdrawalPage_checkTradePwdStatus,
+  inviteFriends,
+  rebateForm,
 } = storeToRefs(usectrlLogin());
 
 const authStore = useAuth();
@@ -143,7 +172,7 @@ const { token, userInfo } = storeToRefs(authStore);
 // 新-提示窗
 import { usepopoutNotice } from "@/store/popoutNotice";
 const { resetpopoutNotice } = usepopoutNotice();
-// const { positionTop } = storeToRefs(usepopoutNotice());
+const { inSlidediv, positionTop } = storeToRefs(usepopoutNotice());
 // const { getBgmSetting } = soundsStore;
 provide("emitter", emitter);
 // 禁止放大瀏覽器
@@ -275,12 +304,48 @@ const mylistStatus = ref(false);
 
 const slideDiv = ref(false); //最上層浮動頁的狀態
 watch(
-  [loginpageStatus, bgmStatus, userInfosetting, changeLoginPwd, changeTradePwd],
-  ([afterV1, afterV2, afterV3, afterV4, afterV5]) => {
-    // console.log(beforeV1);
-    // console.log(beforeV2);
-    // , [beforeV1, beforeV2, beforeV3]
-    if (afterV1 || afterV2 || afterV3 || afterV4 || afterV5) {
+  [
+    loginpageStatus,
+    registerpageStatus,
+    bgmStatus,
+    userInfosetting,
+    changeLoginPwd,
+    changeTradePwd,
+    depositPageStatus,
+    withdrawalPageStatus,
+    addpixPageStatus,
+    withdrawalPage_checkTradePwdStatus,
+    inviteFriends,
+    rebateForm,
+  ],
+  ([
+    afterV1,
+    afterV2,
+    afterV3,
+    afterV4,
+    afterV5,
+    afterV6,
+    afterV7,
+    afterV8,
+    afterV9,
+    afterV10,
+    afterV11,
+    afterV12,
+  ]) => {
+    if (
+      afterV1 ||
+      afterV2 ||
+      afterV3 ||
+      afterV4 ||
+      afterV5 ||
+      afterV6 ||
+      afterV7 ||
+      afterV8 ||
+      afterV9 ||
+      afterV10 ||
+      afterV11 ||
+      afterV12
+    ) {
       slideDiv.value = true;
     } else {
       slideDiv.value = false;
@@ -290,10 +355,17 @@ watch(
 watch(slideDiv, (v) => {
   if (!v) {
     loginpageStatus.value = false;
+    registerpageStatus.value = false;
     bgmStatus.value = false;
     userInfosetting.value = false;
     changeLoginPwd.value = false;
     changeTradePwd.value = false;
+    depositPageStatus.value = false;
+    withdrawalPageStatus.value = false;
+    addpixPageStatus.value = false;
+    withdrawalPage_checkTradePwdStatus.value = false;
+    inviteFriends.value = false;
+    rebateForm.value = false;
   }
 });
 
@@ -310,8 +382,8 @@ const openLoginpage = () => {
 </script>
 <style lang="scss">
 html {
-  background-image: url("@/assets/images/lobby_bg.jpg");
-  background-size: 100%;
+  // background-image: url("@/assets/images/lobby_bg.jpg");
+  // background-size: 100%;
 }
 html,
 body {
@@ -333,6 +405,7 @@ body {
   position: relative;
   // padding: 0.25rem;
   width: 100%;
+  background: $app-bg;
   #main {
     margin: 0 auto;
     position: relative;
@@ -360,38 +433,17 @@ body {
     @include breakpoint-up("xxl") {
       max-width: 1400px;
     }
-
-    background: #23003e;
     color: $primary;
     .serviceiframe {
-      position: sticky;
+      bottom: 4rem;
+      right: 0; //90px
+      position: fixed;
       display: inline-block;
       z-index: $service-index;
-      bottom: 4rem;
-      // background: red;
+
       width: 300px;
-      // right: 2rem;  //不知道為啥不支援
-      left: calc(100% - 2rem);
       height: 500px;
-      // @include breakpoint-up("xs") {
-      //   width: 0px;
-      // }
-      // @include breakpoint-up("sm") {
-      //   width: 300px;
-      // }
-      // @include breakpoint-up("md") {
-      //   width: 300px;
-      // }
-      // @include breakpoint-up("lg") {
-      //   width: 300px;
-      // }
-      // @include breakpoint-up("xl") {
-      //   width: 300px;
-      // }
-      // @include breakpoint-up("xxl") {
-      //   width: 300px;
-      // }
-      // height: v-bind(servieIframeHeight);
+
       iframe {
         width: 100%;
         height: 100%;
@@ -413,7 +465,7 @@ body {
     top: 0;
     left: 0;
     z-index: 103;
-    background: rgba(0, 0, 0, 0.5);
+    background: $popout-page-bg;
     overflow-y: auto;
     text-align: center;
     // width: 100%;

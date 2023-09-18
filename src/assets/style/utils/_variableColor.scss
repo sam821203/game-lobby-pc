@@ -1,0 +1,175 @@
+:root {
+    // 基底配色
+    --primary: white;
+    --app-bg: #140919;
+    --error-color: red;
+    --hr-primary: #686b7e;
+    // 標題色
+    --title: #e2d0ff;
+    --title2: white;
+    //
+    --content-text-1: #9287a4; //內容色1號
+    --content-text-2: white; //內容色2號
+    // 滾動條配色
+    --scrollbar-track-bg: black;
+    --scrollbar-thumb-bg: #686b7e;
+    // 版型配色
+    --popout-page-bg: rgba(0, 0, 0, 0.5); //彈跳視窗背景色 // 淡淡灰
+    --indexNavbar-color: #191a1b; //大廳navbar背景色
+    --group-content-box-bg: #2b1e38;
+    // 彈跳視窗配色
+    --popoutTop-color: #191a1b; // 彈跳視窗-標題背景
+    --popoutMiddle-color: #2b1e38; // 彈跳視窗-內容背景
+    --popoutBottom-color: #191a1c; // 彈跳視窗-底部背景
+    //
+    //
+    //
+    //
+    // 按鈕配色
+    // 按鈕配色,通常用於submit或是離開的按鈕(通常用於大按鈕，會跑到下一流程用
+    --confirm-btn-bg: #6b0285; //確認
+    --anotherservice-btn-bg: #a903d3; // 通往其他頁面(登入那邊忘記密碼有用到
+    --anotherservice-btn-bg-darken: #{darken(#a903d3, 6%)}; // 通往其他頁面(登入那邊忘記密碼有用到
+    // --close-btn-color: #6b0285; //關閉功能
+    --disable-btn-color: gray; //不能按
+    --button-disabled-bg: #44304b; // 沒被選道的button
+    --button-disabled-bg-darken: #{darken(#44304b, 6%)}; // 沒被選道的button
+    --button-selected-bg: #6b0285; //選到的button
+    --button-selected-bg-darken: #{darken(#6b0285, 6%)}; // hover
+    --canclick-pageBtn-bg: #5c3b7a; // 能用的按鈕的背景色
+    // 按鈕配色,用於功能型按鈕，點了會開啟其他東西
+    --func-button-bg-selected: #170524; //選到的button，關於我 目前點選的按鈕
+    --func-button-color-default: #7e689f; // 其他沒點到的按鈕的顏色
+    --func-button-color-default-darken: #{darken(#7e689f, 6%)}; // 其他沒點到的按鈕的顏色
+    // 特規-我的功能-按鈕被景色
+    --my-func-button-bg: #221733;
+    --my-func-button-border: #6b0285;
+    // 按鈕框配色
+    --choosed-Content-Border: #2a82e4; // 用於提款介面，選擇PIX，被選到的框框會變色
+    //  除了按鈕(邊框/很像按鈕的div等等......)
+    --modal-key: #6b0285;
+    --anotherservice-text-color: #a903d3;
+    //
+    //
+    //
+    //
+    //
+    // 特規-排行榜
+    --leaderBoard-title-bg: linear-gradient(90deg, #4a3867 0%, rgba(74, 56, 103, 0.19) 100%); // 標題背景
+    --leaderBoard-content-bg: #191a1b; // 內容背景
+    --leaderBoard-table-even-bg: black;
+    //
+
+    //
+    // input的框 預設顏色 (詳細及變更大部分在baseInput.vue
+    --default-input-bg: black;
+    --default-input-placeholder-color: #665e74;
+    --default-input-border: #646d80;
+    --default-input-color: white;
+    --withdraw-deposit-input-border: #5c3b7a; // 能用的按鈕的背景色
+    // box (目前用在站內信，已讀取及未讀取 樣式不同)
+    --readed-box-border: #383838;
+    --readed-box-title-text: #797088;
+    --readed-box-content1-bg: #161320;
+    --readed-box-content1-text: #9287a4;
+    --unread-box-border: #85639b;
+    --unread-box-title-text: #e2d0ff;
+    --unread-box-content1-bg: #43324e;
+    --unread-box-content1-text: #9287a4;
+    // table
+    --table-title-bg: #a903d3;
+    // marquee
+    --marquee-bg: #100f11;
+    --marquee-border: #2d2a2f;
+    //
+    // 特規-存款下方的checkbox
+    --deposit-notice-checked-icon: white;
+    --deposit-notice-checked-bg: #ff8d1a;
+    //
+    // 框線顏色
+    // 很像table
+    --similar-table-border: rgb(67, 51, 77);
+    --similar-table-title: #a903d3;
+}
+
+// 基底配色
+$primary: var(--primary); //預設顏色
+$app-bg: var(--app-bg); //基底背景顏色
+$error-color: var(--error-color); //錯誤警告色
+$hr-primary: var(--hr-primary); //用於 分隔線 (存提款有用到)
+//
+$title: var(--title); // 標題色
+$title2: var(--title2);
+//
+$content-text-1: var(--content-text-1); //內容色1號
+$content-text-2: var(--content-text-2); //內容色2號
+// 滾動條配色
+$scrollbar-track-bg: var(--scrollbar-track-bg);
+$scrollbar-thumb-bg: var(--scrollbar-thumb-bg);
+// 版型配色
+$popout-page-bg: var(--popout-page-bg); //彈跳視窗背景色 // 淡淡灰
+$indexNavbar-color: var(--indexNavbar-color); //大廳navbar背景色
+$group-content-box-bg: var(--group-content-box-bg);
+// 彈跳視窗配色
+$popoutTop-color: var(--popoutTop-color); // 彈跳視窗-標題背景
+$popoutMiddle-color: var(--popoutMiddle-color); // 彈跳視窗-內容背景
+$popoutBottom-color: var(--popoutBottom-color); // 彈跳視窗-底部背景
+
+// 按鈕配色,通常用於submit或是離開的按鈕(通常用於大按鈕，會跑到下一流程用
+$confirm-btn-bg: var(--confirm-btn-bg); //確認
+$anotherservice-btn-bg: var(--anotherservice-btn-bg); // 通往其他頁面(登入那邊忘記密碼有用到
+$anotherservice-btn-bg-darken: var(--anotherservice-btn-bg-darken); // 通往其他頁面(登入那邊忘記密碼有用到
+// $close-btn-color: #6b0285; //關閉功能
+$disable-btn-color: var(--disable-btn-color); //不能按
+$button-disabled-bg: var(--button-disabled-bg); // 沒被選道的button
+$button-disabled-bg-darken: var(--button-disabled-bg-darken); // 沒被選道的button
+$button-selected-bg: var(--button-selected-bg); //選到的button
+$button-selected-bg-darken: var(--button-selected-bg-darken);
+$canclick-pageBtn-bg: var(--canclick-pageBtn-bg); // 能用的按鈕的背景色
+// 按鈕配色,用於功能型按鈕，點了會開啟其他東西
+$func-button-bg-selected: var(--func-button-bg-selected); //選到的button，關於我 目前點選的按鈕
+$func-button-color-default: var(--func-button-color-default); // 其他沒點到的按鈕的顏色
+$func-button-color-default-darken: var(--func-button-color-default-darken); // 其他沒點到的按鈕的顏色
+// 特規-我的功能-按鈕被景色
+$my-func-button-bg: var(--my-func-button-bg);
+$my-func-button-border:var(--my-func-button-border);
+// 特規-排行榜
+$leaderBoard-title-bg: var(--leaderBoard-title-bg); // 標題背景
+$leaderBoard-content-bg: var(--leaderBoard-content-bg); // 內容背景
+$leaderBoard-table-even-bg: var(--leaderBoard-table-even-bg);
+//
+// 按鈕框配色
+$choosed-Content-Border: var(--choosed-Content-Border); // 用於提款介面，選擇PIX，被選到的框框會變色
+//  除了按鈕(邊框/很像按鈕的div等等......)
+$modal-key: var(--modal-key);
+$anotherservice-text-color: var(--anotherservice-text-color);
+//
+// input的框 預設顏色 (詳細及變更大部分在baseInput.vue
+$default-input-bg: var(--default-input-bg);
+$default-input-placeholder-color: var(--default-input-placeholder-color);
+$default-input-border: var(--default-input-border);
+$default-input-color: var(--default-input-color);
+$withdraw-deposit-input-border: var(--withdraw-deposit-input-border); // 能用的按鈕的背景色
+// box (目前用在站內信，已讀取及未讀取 樣式不同)
+$readed-box-border: var(--readed-box-border);
+$readed-box-title-text: var(--readed-box-title-text);
+$readed-box-content1-bg: var(--readed-box-content1-bg);
+$readed-box-content1-text: var(--readed-box-content1-text);
+$unread-box-border: var(--unread-box-border);
+$unread-box-title-text: var(--unread-box-title-text);
+$unread-box-content1-bg: var(--unread-box-content1-bg);
+$unread-box-content1-text: var(--unread-box-content1-text);
+// table
+$table-title-bg: var(--table-title-bg);
+// marquee
+$marquee-bg: var(--marquee-bg);
+$marquee-border: var(--marquee-border);
+//
+// 特規-存款下方的checkbox
+$deposit-notice-checked-icon: var(--deposit-notice-checked-icon);
+$deposit-notice-checked-bg: var(--deposit-notice-checked-bg);
+//
+// 框線顏色
+// 很像table
+$similar-table-border: var(--similar-table-border);
+$similar-table-title: var(--similar-table-title);

@@ -1,5 +1,5 @@
 <template>
-  <div class="authWrap" v-show="loginpageStatus">
+  <div class="authWrap" v-show="loginpageStatus || registerpageStatus">
     <div class="navbar">
       <div class="logo" @click="closeModal">
         <img
@@ -16,10 +16,7 @@
     <div class="main">
       <ul class="link-wrap">
         <li
-          :class="[
-            'link-item',
-            authStatus === 'login' ? 'selected' : 'notSelected',
-          ]"
+          :class="['link-item', loginpageStatus ? 'selected' : 'notSelected']"
           @click="changeRoute('login')"
         >
           <p>{{ $t("register.registerPage") }}</p>
@@ -27,7 +24,7 @@
         <li
           :class="[
             'link-item',
-            authStatus === 'register' ? 'selected' : 'notSelected',
+            registerpageStatus ? 'selected' : 'notSelected',
           ]"
           @click="changeRoute('register')"
         >
@@ -36,16 +33,14 @@
           </p>
         </li>
       </ul>
-      <!-- <router-view></router-view> -->
-      <login v-if="authStatus === 'login'" />
-      <register v-if="authStatus === 'register'" />
+      <login v-if="loginpageStatus" />
+      <register v-if="registerpageStatus" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { getUuid } from "@/utils/cookie";
+import { onMounted } from "vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import login from "@/views/auth/login.vue";
@@ -53,48 +48,35 @@ import register from "@/views/auth/register/index.vue";
 
 import { useRoute } from "vue-router";
 import { usectrlLogin } from "@/store/ctrlLogin";
-const { loginpageStatus } = storeToRefs(usectrlLogin());
+const { loginpageStatus, registerpageStatus } = storeToRefs(usectrlLogin());
 const route = useRoute();
-const uuid = getUuid("uuid") !== undefined ? getUuid("uuid") : "";
-console.log("uuid", uuid);
 
 // const { setserviceConectData } = serviceConect();
 const { useLanguage } = useStore();
 const langStore = useLanguage();
 const { curLang } = storeToRefs(langStore);
 
-const authStatus = ref("login");
-
-const changeRoute = (route) => {
-  // router.push(route);
-  authStatus.value = route;
-};
-
-// const openWebsite = (url) => {
-//   window.open(url);
-// };
 const closeModal = () => {
-  // usectrlLogin().$patch({
-  //   loginpageStatus: false,
-  // });
   loginpageStatus.value = false;
+  registerpageStatus.value = false;
+};
+const changeRoute = (route) => {
+  if (route == "login") {
+    loginpageStatus.value = true;
+    registerpageStatus.value = false;
+  } else {
+    loginpageStatus.value = false;
+    registerpageStatus.value = true;
+  }
 };
 onMounted(() => {
   if (route.params.id) {
-    authStatus.value = "register";
+    registerpageStatus.value = true;
   }
 });
 </script>
 
 <style lang="scss" scoped>
-// rgba(73, 56, 96, 1)
-// rgb(40, 32, 48)
-.authWrap {
-  // display: inline-block;
-  // margin-top: $topBar-height;
-  // background: rgba(73, 56, 96, 1);
-  // background: red;
-}
 .link-list {
   li {
     img {
@@ -102,12 +84,9 @@ onMounted(() => {
     }
   }
 }
-:deep(.input) {
-  background: black;
-  border: 1px solid #646d80;
-  // color: #646d80;
-  color: white;
-}
+// :deep(.input) {
+
+// }
 .footerbtn {
   display: flex;
   width: 100%;

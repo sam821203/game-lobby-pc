@@ -1,22 +1,10 @@
 <template>
-  <!-- 紅利狀態 -->
-  <!-- <div class="stateGroup">
-    <div
-      :class="[
-        'option',
-        { child: index > 0 },
-        { selected: selected === option.id },
-      ]"
-      v-for="(option, index) in optionList"
-      :key="index"
-      @click="selectState(option.id)"
-    >
-      {{ $t(option.option) }}
-    </div>
-  </div> -->
+  1231231312
+  <Announcement />
+  <MiddleBar />
   <BaseHeader
     :content="'activityList.awardCenter'"
-    :imgSrc="'activityList/promotions_1'"
+    :imgSrc="'activityList/record'"
   />
   <BaseTabFilter
     :showStatus="showStatus"
@@ -27,161 +15,78 @@
     v-if="showList"
   >
   </BaseTabFilter>
-  <div class="noData" v-else>{{ $t("No Data") }}</div>
+  <div class="no-data" v-else>{{ $t("No Data") }}</div>
 
   <!-- 紅利細節 -->
-  <!-- <div
-    class="bonus-section"
-    @click="openBonusDetail(index)"
-    v-for="(bonus, index) in showList"
-    :key="index"
-  >
-    <div class="top__content">
-      <p>{{ bonus.name }}</p>
-      <div class="bonus__content">
-        <span>{{ $t("Bonus") }}</span>
-        <span>R$ {{ bonus.bonus / 10000 }} </span>
-      </div>
-    </div>
-    <div
-      :class="['down__content', { open__content: bonusDetail === index }]"
-    >
-      <div
-        class="claim-deadline"
-        v-if="bonus.status === 0 && bonus.countDownTime !== '00:00:00'"
-      >
-        <span>{{ $t("Claim Deadline") }}: </span
-        ><span :class="[{ red: bonus.smallThanOneDay }]">{{
-          bonus.countDownTime
-        }}</span>
-      </div>
-      <div class="claim-deadline" v-else></div>
-      <div v-if="bonusDetail === index">
-        <div class="line">
-          <span>{{ $t("completion Deadline") }}: </span
-          ><span v-time="bonus.achieve_time"></span>
-        </div>
-        <div class="line">
-          <span>{{ $t("Redeem Threshold") }}: </span
-          ><span>{{ bonus.threshold / 10000 }}</span>
-        </div>
-        <div class="line">
-          <span>{{ $t("Post-Redeem Threshold") }}: </span
-          ><span>{{ (userRedeem + bonus.threshold) / 10000 }}</span>
-        </div>
-        <button
-          class="claim"
-          @click.prevent="claim(bonus.id, bonus.type)"
-          v-if="bonus.status === 0 && bonus.countDownTime !== '00:00:00'"
-        >
-          {{ $t("CLAIM") }}
-        </button>
-        <div class="blank" v-else></div>
-        <p v-if="bonus.status === 3" class="similar">
-          {{ $t("Already received similar bonuses") }}
-        </p>
-      </div>
-      <div :class="['arrow', { openArrow: bonusDetail === index }]"></div>
-    </div>
-
-    <div
-      :class="['stamp__expired', { openStamp: bonusDetail === index }]"
-      v-if="
-        bonus.status === 2 ||
-        (bonus.countDownTime === '00:00:00' &&
-          bonus.status !== 3 &&
-          bonus.status !== 1)
-      "
-    >
-      {{ $t("Expired") }}
-    </div>
-    <div
-      :class="['stamp__claim', { openStamp: bonusDetail === index }]"
-      v-if="bonus.status === 1"
-    >
-      {{ $t("Claimed") }}
-    </div>
-    <div
-      :class="['stamp__cancel', { openStamp: bonusDetail === index }]"
-      v-if="bonus.status === 3"
-    >
-      {{ $t("Canceled") }}
-    </div>
-  </div> -->
-
   <div class="bonus-section" v-for="(bonus, index) in showList" :key="index">
-    <p>{{ bonus.name }}</p>
+    <BaseCard>
+      <p>{{ bonus.name }}</p>
 
-    <div class="bonus__content">
-      <span>{{ $t("Bonus") }}</span>
-      <span>R$ {{ bonus.bonus / 10000 }} </span>
-    </div>
-
-    <!-- 領取時限 -->
-    <div
-      class="claim-deadline"
-      v-if="bonus.status === 0 && bonus.countDownTime !== '00:00:00'"
-    >
-      <span>{{ $t("Claim Deadline") }}: </span
-      ><span :class="[{ red: bonus.smallThanOneDay }]">{{
-        bonus.countDownTime
-      }}</span>
-    </div>
-    <div class="claim-deadline" v-else></div>
-
-    <ul class="bottom__content">
-      <li>
-        <div>{{ $t("completion Deadline") }}:</div>
-        <div v-time="bonus.achieve_time"></div>
-      </li>
-      <li>
-        <div>{{ $t("Redeem Threshold") }}:</div>
-        <div>{{ bonus.threshold / 10000 }}</div>
-      </li>
-      <li>
-        <div>{{ $t("Post-Redeem Threshold") }}:</div>
-        <div>{{ (userRedeem + bonus.threshold) / 10000 }}</div>
-      </li>
-      <li>
-        <!-- 領取狀態印章 -->
-        <div class="stamp">
-          <div
-            :class="['stamp__expired', { openStamp: bonusDetail === index }]"
-            v-if="
-              bonus.status === 2 ||
-              (bonus.countDownTime === '00:00:00' &&
-                bonus.status !== 3 &&
-                bonus.status !== 1)
-            "
+      <div class="bonus__content">
+        <!-- 領取時限 -->
+        <div
+          class="deadline"
+          v-visibility="
+            bonus.status === 0 && bonus.countDownTime !== '00:00:00'
+          "
+        >
+          <span>{{ $t("Claim Deadline") }}: </span
+          ><span
+            :class="['mr-sm deadline__num', { warning: bonus.smallThanOneDay }]"
+            >{{ bonus.countDownTime }}</span
           >
-            {{ $t("Expired") }}
-          </div>
-          <div
-            :class="['stamp__claim', { openStamp: bonusDetail === index }]"
-            v-if="bonus.status === 1"
-          >
-            {{ $t("Claimed") }}
-          </div>
-          <div
-            :class="['stamp__cancel', { openStamp: bonusDetail === index }]"
-            v-if="bonus.status === 3"
-          >
-            {{ $t("Canceled") }}
-          </div>
         </div>
-      </li>
-      <button
-        class="claim"
-        @click.prevent="claim(bonus.id, bonus.type)"
-        v-if="bonus.status === 0 && bonus.countDownTime !== '00:00:00'"
-      >
-        {{ $t("CLAIM") }}
-      </button>
-      <div class="blank" v-else></div>
-      <p v-if="bonus.status === 3" class="similar">
-        {{ $t("Already received similar bonuses") }}
-      </p>
-    </ul>
+        <span
+          ><span class="tag">R$</span
+          >{{ groupDigital(divideByNum(bonus.bonus)) }}
+        </span>
+      </div>
+
+      <ul class="bottom__content">
+        <li v-visibility="bonus.status === 0">
+          <div>{{ $t("completion Deadline") }}:</div>
+          <div v-timeWithMeridiem="bonus.achieve_time"></div>
+        </li>
+        <li v-visibility="bonus.status === 0">
+          <div>{{ $t("Redeem Threshold") }}:</div>
+          <div v-groupDigital="divideByNum(bonus.threshold)"></div>
+        </li>
+        <li v-visibility="bonus.status === 0">
+          <div>{{ $t("Post-Redeem Threshold") }}:</div>
+          <div v-groupDigital="divideByNum(userRedeem + bonus.threshold)"></div>
+        </li>
+
+        <!-- 領取狀態印章 -->
+        <li>
+          <div class="stamp">
+            <div
+              class="stamp__claim"
+              @click.prevent="claim(bonus)"
+              v-if="bonus.status === 0 && bonus.countDownTime !== '00:00:00'"
+            >
+              {{ $t("CLAIM") }}
+            </div>
+            <div
+              class="stamp__expired"
+              v-if="
+                bonus.status === 2 ||
+                (bonus.countDownTime === '00:00:00' &&
+                  bonus.status !== 3 &&
+                  bonus.status !== 1)
+              "
+            >
+              {{ $t("Expired") }}
+            </div>
+            <div class="stamp__claimed" v-if="bonus.status === 1">
+              {{ $t("Claimed") }}
+            </div>
+            <div class="stamp__cancel" v-if="bonus.status === 3">
+              {{ $t("Canceled") }}
+            </div>
+          </div>
+        </li>
+      </ul>
+    </BaseCard>
   </div>
 </template>
 
@@ -193,6 +98,9 @@ import { getBonusListApi, claimBonusApi } from "@/api/announcement.js";
 import { getPlayerId } from "@/utils/cookie";
 import { storeToRefs } from "pinia";
 import { displayTimeLeft } from "@/utils/timer";
+
+import Announcement from "@/views/home/components/announcement.vue";
+import MiddleBar from "@/views/home/components/middleBar.vue";
 
 const { useMessage, useAuth } = useStore();
 const authStore = useAuth();
@@ -218,6 +126,8 @@ const optionList = reactive([
 ]);
 
 const showStatus = () => (statusList.value = !statusList.value);
+const divideByNum = (num) => num / 10000;
+const groupDigital = (num) => num.toLocaleString();
 
 // const openBonusDetail = (index) => {
 //   if (bonusDetail.value === index) {
@@ -229,12 +139,31 @@ const showStatus = () => (statusList.value = !statusList.value);
 //   }
 // };
 
-const claim = (id, type) => {
+const claim = (bonus) => {
   openMsg({
-    content: "Você tem certeza de que deseja resgatar o bônus da atividade?",
-    hasCancel: true,
+    title: t("activityList.redeemBonus"),
+    content: " ",
+    contentList: [
+      {
+        id: 1,
+
+        title: t("Redeem Threshold"),
+        info: groupDigital(divideByNum(bonus.threshold)),
+      },
+      {
+        id: 2,
+        title: t("Post-Redeem Threshold"),
+        info: groupDigital(divideByNum(userRedeem.value + bonus.threshold)),
+      },
+      {
+        id: 3,
+        title: t("activityList.activityBonus"),
+        info: groupDigital(divideByNum(bonus.bonus)),
+      },
+    ],
+    hasContentList: true,
   }).then(() => {
-    claimBonus(id, type);
+    claimBonus(bonus.id, bonus.type);
   });
 };
 
@@ -285,8 +214,6 @@ const countdown = (i) => {
     const deadline = new Date(showList.value[i]?.expire_time).getTime();
     const start = new Date().getTime();
     showList.value[i].countDownTime = deadline - start;
-    // showList.value[i].countDownTime = deadline - start;
-    console.log(showList.value[i]?.countDownTime);
     if (
       showList.value[i]?.countDownTime <= 0 ||
       showList.value[i]?.countDownTime === "00:00:00"
@@ -294,7 +221,6 @@ const countdown = (i) => {
       showList.value[i].countDownTime = "0";
       showList.value[i].timeExpired = true;
       clearInterval(intervalTimer.value[i]);
-      // return;
     }
     if (showList.value[i]?.countDownTime > 86400000) {
       showList.value[i].countDownTime = `${Math.floor(
@@ -317,8 +243,12 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss">
-.noData {
+<style lang="scss" scoped>
+.header {
+  margin-top: 32px;
+  margin-left: 24px;
+}
+.no-data {
   text-align: center;
   margin-top: 30%;
   font-size: 1.5rem;
@@ -326,36 +256,65 @@ onBeforeUnmount(() => {
 }
 .bonus-section {
   position: relative;
-  width: 90%;
-  margin: 0 auto;
-  margin-top: 3%;
+  width: 100%;
+  padding: 0 24px;
+  margin-bottom: 12px;
+  color: $title2;
+  .base {
+    padding: 20px 20px 16px;
+  }
+  p {
+    padding-left: 8px;
+    margin-bottom: 12px;
+    border-left: 3px solid $anotherservice-text-color;
+  }
   .bonus__content {
     display: flex;
     justify-content: space-between;
-    margin-top: 2%;
+    margin-bottom: 8px;
+    span:first-child {
+      font-size: 14px;
+    }
+    span:last-child {
+      font-weight: 600;
+      .tag {
+        margin-right: 4px;
+        color: $anotherservice-text-color;
+      }
+    }
   }
   .bottom__content {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
     li {
       width: 25%;
+      &:not(:last-child) {
+        div {
+          &:first-child {
+            font-weight: 600;
+          }
+          &:last-child {
+            font-size: 14px;
+            letter-spacing: 0.2px;
+          }
+        }
+      }
     }
   }
-  .claim-deadline {
-    .red {
-      color: red;
+  .deadline {
+    .mr-sm {
+      margin-right: 4px;
+    }
+    .deadline__num {
+      color: $func-button-color-default;
+      &.warning {
+        color: $error-color;
+      }
     }
   }
-  .claim-deadline {
-    margin-bottom: 3%;
-  }
-  .claim {
-    height: 2rem;
-    width: 25%;
-    color: white;
-    border-radius: 10px;
-    margin-left: 25%;
-    background: #6b0285;
+  .deadline {
+    font-weight: 600;
   }
   .blank {
     height: 1.2rem;
@@ -363,38 +322,51 @@ onBeforeUnmount(() => {
   }
   .similar {
     text-align: center;
-    color: red;
+    color: $error-color;
     font-weight: 600;
     margin-top: -5%;
   }
 }
-.stamp__expired,
+.stamp {
+  width: 100%;
+}
 .stamp__claim,
+.stamp__expired,
+.stamp__claimed,
 .stamp__cancel {
-  width: 35%;
+  height: 40px;
   font-weight: 600;
+  line-height: 40px;
   text-align: center;
-  border-radius: 5px;
-  padding: 2%;
-  position: absolute;
-  top: 50%;
-  left: 6%;
-  transform: rotate(-8deg);
+  border-radius: $border-radius-md;
+}
+.stamp__claim {
+  color: $title2;
+  background: $modal-key;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover {
+    background: $button-selected-bg-darken;
+    filter: brightness(94%);
+  }
 }
 .stamp__expired {
-  color: #d43030;
-  border: 2px solid #d43030;
+  color: $error-color;
+  border: 3px solid $error-color;
+  line-height: 36px;
+  transform: rotate(8deg);
+  transform-origin: 100% 0%;
 }
-
-.stamp__claim {
-  color: #ff8d1a;
-  border: 2px solid #ff8d1a;
+.stamp__claimed {
+  color: $title2;
+  background: $disable-btn-color;
+  cursor: not-allowed;
 }
 .stamp__cancel {
-  color: gray;
-  border: 2px solid gray;
-}
-.openStamp {
-  top: 25%;
+  color: $disable-btn-color;
+  border: 3px solid $disable-btn-color;
+  line-height: 36px;
+  transform: rotate(8deg);
+  transform-origin: 100% 0%;
 }
 </style>

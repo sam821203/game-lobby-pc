@@ -1,13 +1,14 @@
 <template>
   <div class="message-wrap" @click="handleAction('cancelAction')"></div>
   <div :class="['message', type]">
-    <div class="title">
-      {{ title }}
-      <img
-        src="@/assets/images/layouts/close.png"
-        class="close"
-        @click="handleAction('cancel')"
-      />
+    <div class="title" v-if="titleBar">
+      <span>{{ title }}</span>
+      <div class="close">
+        <img
+          src="@/assets/images/layouts/close.png"
+          @click="handleAction('cancel')"
+        />
+      </div>
     </div>
     <div class="container">
       <div class="text">
@@ -16,13 +17,21 @@
           v-html="slot"
           v-if="slot"
         ></div>
+        <ul class="content" v-else-if="contentList">
+          <li class="list" v-for="(li, index) in contentList" :key="index">
+            <div>{{ li.title }}</div>
+            <div class="list__right">
+              <span class="tag" v-if="index === contentList.length - 1">R$</span
+              >{{ li.info }}
+            </div>
+          </li>
+        </ul>
         <p
           :class="[
             'content normal',
             { nowrap: content.length < 10 },
             textSize($t(content, { contentVal })),
           ]"
-          style="text-align: center; width: 100%"
           v-else
           ref="normalContent"
         >
@@ -30,34 +39,44 @@
         </p>
       </div>
       <div class="button-group" v-if="hasBtn">
-        <!-- <baseButton
-          :bgType="cancelBtn"
+        <baseButton
+          :bgType="'big_confirmBtn'"
+          mode="rounded light"
           @click="handleAction('cancel')"
-          class="save"
           v-if="hasCancel"
           >{{ entryGame ? "Espere" : $t("openMsg.cancel") }}
-        </baseButton> -->
+        </baseButton>
         <baseButton
-          @click="handleAction('confirm')"
-          class="save"
           :bgType="'big_confirmBtn'"
-          >{{ deposit ? "Depósito" : $t("openMsg.confirm") }}</baseButton
+          mode="rounded light"
+          v-if="hasContentList"
+          @click="handleAction('confirm')"
         >
+          {{ deposit ? "Depósito" : $t("openMsg.confirmReceive") }}
+        </baseButton>
+        <baseButton
+          :bgType="'big_confirmBtn'"
+          mode="rounded light"
+          class="test"
+          @click="handleAction('confirm')"
+          v-else
+        >
+          {{ deposit ? "Depósito" : $t("openMsg.confirm") }}
+        </baseButton>
       </div>
       <div v-if="isContectService && !hasBtn">
         <button class="callService" @click="setserviceConectData(true)">
           {{ $t("Entrar em contato com o serviço de atendimento ao cliente.") }}
         </button>
-        <!-- <button @click="handleAction('cancel')" class="cancel">
+        <button @click="handleAction('cancel')" class="cancel">
           {{ $t("OK") }}
-        </button> -->
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// import { ref } from "vue";
 import { useMessage } from "@/store/msgStore";
 import { storeToRefs } from "pinia";
 import { useLanguage } from "@/store/languageStore";
@@ -83,15 +102,19 @@ const {
   hasBtn,
   type,
   contentVal,
+  contentList,
   slot,
-  // hasCancel,
+  hasCancel,
+  hasContentList,
   entryGame,
   deposit,
   joinGame,
   isContectService,
+  titleBar,
 } = storeToRefs(msg);
 const langStore = useLanguage();
 const { curLang } = storeToRefs(langStore);
+
 const textSize = (len) => {
   return (len > 30 && (curLang.value !== "ch" || curLang.value !== "zhtw")) ||
     (len > 13 && (curLang.value === "ch" || curLang.value === "zhtw"))
@@ -102,23 +125,16 @@ const textSize = (len) => {
 const handleAction = (action) => {
   if (action === "confirm") {
     save();
-    console.log("1");
   } else if (
     action === "cancel" &&
     entryGame.value === true &&
     joinGame.value === false
   ) {
     close();
-    console.log("2");
   } else if (action === "cancel" && joinGame.value === true) {
     enterGame();
   } else {
     close();
-    console.log(action);
-    console.log(joinGame.value);
-    console.log(entryGame.value);
-
-    console.log("4");
   }
   msg.$patch({
     title: "",
@@ -147,15 +163,14 @@ const enterGame = async () => {
   const GameId = gameId.value;
   // const Category = category.value;
   const res = await getGameUrlApi(Studio, GameId, data);
-  console.log(category.value);
-
   game.$patch({
     gameUrl: res.data.data.url,
   });
-  console.log(res.data.data.url);
-
   router.push({
-    path: `/gameRoom/${category.value}/${Studio}`,
+    // category.value === null ? "toIndex" : category.value  懶得修，直接參照 大廳進遊戲的處理方式來處理
+    path: `/gameRoom/${
+      category.value === null ? "toIndex" : category.value
+    }/${Studio}`,
     query: { hasHomeBtn: studio !== "joygames" && studio !== "goldenwind" },
   });
 };
@@ -167,7 +182,8 @@ const enterGame = async () => {
   width: 80%;
   margin: auto;
   padding: 0.5rem 1rem;
-  background: #a903d2;
+  height: 60px;
+  background: $anotherservice-btn-bg;
   border-radius: 5px;
   color: white;
   // padding: 1rem;
@@ -178,8 +194,9 @@ const enterGame = async () => {
   margin: auto;
   margin-top: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #6b0185;
+  background: $confirm-btn-bg;
   color: white;
+  height: 60px;
   border-radius: 5px;
 }
 </style>

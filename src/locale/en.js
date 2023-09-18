@@ -518,7 +518,7 @@ export default {
   openMsg: {
     logOut: "Log out",
     logOutConfirm: "Do you want to log out?",
-    confirm: "OK",
+    confirm: "Redemption confirmation",
     isNotOpen: "Function is not turned on",
     "維護中，請稍後再試": "Under Maintenance, please try again later",
     cancel: "Cancel",
@@ -1070,7 +1070,7 @@ export default {
     deleteOrder: "Delete the Deposit",
     support: "Please contact the Support Center for any question.",
     deleteRemind:
-      '<span style="font-size: 1.2rem">You can add a new Deposit after a deposit deletion.<p style="color: red; margin-top: 30%">Please do not delete the Desposit if the despoit is made.</p></span>',
+      '<span style="font-size: 1.2rem">You can add a new Deposit after a deposit deletion.<p style="color: $error-color; margin-top: 30%">Please do not delete the Desposit if the despoit is made.</p></span>',
     balance: "Balance",
     validBets: "Valid Bets",
     threshold: "Threshold",
@@ -1402,6 +1402,8 @@ export default {
     expired: "Expired",
     cancelled: "Cancelled",
     awardCenter: "Award Center",
+    redeemBonus: "Are you sure you want to redeem the activity bonus?",
+    activityBonus: "Activity bonus",
   },
   gameLobby: {
     maintence: "maintenance",
@@ -1529,4 +1531,5 @@ export default {
   帳號密碼不正確: "Incorrect username or password.",
   新: "NEW",
   返回: "Go Back",
+  CLAIM: "Claim",
 };

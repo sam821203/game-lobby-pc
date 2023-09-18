@@ -8,19 +8,16 @@ const { setPromotionScrollTop } = useAnnouncement();
 import { storeToRefs } from "pinia";
 import i18n from "@/utils/i18n";
 const { t } = i18n.global;
-import { getEditNum, setUuid, removeUuid } from "@/utils/cookie";
+import { setUuid, removeUuid } from "@/utils/cookie";
 // import { upgradeUserApi } from "@/api/user";
 import { usectrlLogin } from "@/store/ctrlLogin";
 
-const { useMessage, useAuth, useDeposit, useModal } = useStore();
+const { useMessage, useAuth, useModal } = useStore();
 const { openMsg } = useMessage();
 
 const authStore = useAuth();
 const { logout } = authStore;
 const { token, userInfo } = storeToRefs(authStore);
-
-const depositStore = useDeposit();
-const { orderNum } = storeToRefs(depositStore);
 
 const modalStore = useModal();
 const { toggleModal, modalType } = modalStore;
@@ -55,136 +52,6 @@ const routes = [
     ],
   },
   {
-    path: "/member",
-    name: "member",
-    component: () => import("@/layouts/operation"),
-    meta: {
-      auth: true,
-    },
-    children: [
-      {
-        path: "memberCenter",
-        name: "memberCenter",
-        meta: {
-          auth: true,
-          name: "我的",
-        },
-        component: () => import("../views/member/memberCenterView"),
-      },
-    ],
-  },
-  {
-    path: "/deposit",
-    component: () => import("@/layouts/operation"),
-    meta: {
-      auth: true,
-    },
-    children: [
-      {
-        path: "deposit",
-        name: "deposit",
-        meta: {
-          auth: true,
-          name: "存款",
-        },
-        component: () =>
-          import(/* webpackChunkName: "deposit" */ "../views/deposit/deposit"),
-      },
-      // {
-      //   path: "depositForm",
-      //   name: "depositForm",
-      //   meta: {
-      //     auth: true,
-      //     name: "存款確認",
-      //   },
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: "depositForm" */ "../views/deposit/depositForm"
-      //     ),
-      // },
-      {
-        path: "withdraw",
-        name: "withdraw",
-        meta: {
-          auth: true,
-          name: "提款",
-        },
-        component: () =>
-          import(
-            /* webpackChunkName: "withdraw" */ "../views/deposit/withdraw"
-          ),
-      },
-
-      // {
-      //   path: "addBankCard",
-      //   name: "addBankCard",
-      //   meta: {
-      //     auth: true,
-      //     name: "新增銀行卡",
-      //   },
-      //   component: () =>
-      //     import(
-      //        "../views/deposit/addBankCard"
-      //     ),
-      // },
-      {
-        path: "withdrawForm",
-        name: "withdrawForm",
-        meta: {
-          auth: true,
-          name: "提款確認",
-        },
-        component: () =>
-          import(
-            /* webpackChunkName: "withdrawForm" */ "../views/deposit/withdrawForm"
-          ),
-      },
-      {
-        path: "addPIX",
-        name: "addPIX",
-        meta: {
-          auth: true,
-          name: "新增PIX",
-        },
-        component: () =>
-          import(/* webpackChunkName: "addGCash" */ "../views/deposit/addPIX"),
-      },
-      // {
-      //   path: "gCashSetting",
-      //   name: "gCashSetting",
-      //   meta: {
-      //     auth: true,
-      //     name: "提款管理",
-      //   },
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: "gCashSetting" */ "../views/deposit/gCashSetting"
-      //     ),
-      // },
-      {
-        path: "editGCash",
-        name: "editGCash",
-        meta: {
-          auth: true,
-          name: "編輯GCash",
-        },
-        component: () =>
-          import(
-            /* webpackChunkName: "editGCash" */ "../views/deposit/editGCash"
-          ),
-      },
-      // {
-      //   path: "safeSetting",
-      //   name: "safeSetting",
-      //   meta: {
-      //     auth: true,
-      //     name: "安全設置",
-      //   },
-      //   component: () => import("../views/deposit/safe"),
-      // },
-    ],
-  },
-  {
     path: "/info",
     component: () => import("@/layouts/operation"),
     redirect: "/info/announcement",
@@ -202,13 +69,13 @@ const routes = [
         component: () => import("../views/operation/announcementView"),
       },
       {
-        path: "announcement/:id",
+        path: "announcementDetail",
         name: "announcementDetail",
         meta: {
           auth: false,
           name: "詳細公告",
         },
-        component: () => import("../views/info/announcementDetail"),
+        component: () => import("../views/operation/announcementDetail"),
       },
       {
         path: "platformRule",
@@ -274,15 +141,6 @@ const routes = [
           name: "我的",
         },
         component: () => import("../views/info/userInfo"),
-      },
-      {
-        path: "leaderBoard",
-        name: "排行榜",
-        meta: {
-          auth: false,
-          name: t("排行榜"),
-        },
-        component: () => import("../views/info/leaderBoard"),
       },
     ],
   },
@@ -361,48 +219,6 @@ const routes = [
       },
     ],
   },
-  // {
-  //   path: "/auth",
-  //   name: "auth",
-  //   component: () => import("@/layouts/authLayout"),
-  //   meta: {
-  //     auth: false,
-  //   },
-  //   children: [
-  //     {
-  //       path: "login/:id?",
-  //       name: "login",
-  //       meta: {
-  //         name: "登入",
-  //       },
-  //       component: () => import("@/views/auth/login"),
-  //     },
-  //     {
-  //       path: "register/:id?",
-  //       name: "register",
-  //       meta: {
-  //         name: "註冊",
-  //       },
-  //       component: () => import("@/views/auth/register/index"),
-  //     },
-  //   ],
-  // },
-  {
-    path: "/setting",
-    name: "setting",
-    component: () => import("@/layouts/operation"),
-    children: [
-      {
-        path: "sound",
-        name: "sound",
-        meta: {
-          auth: false,
-          name: "設定",
-        },
-        component: () => import("../views/setting/sound"),
-      },
-    ],
-  },
   {
     path: "/gameRoom/:category/:studio?",
     name: "gameRoom",
@@ -464,18 +280,6 @@ const kick = (to) => {
 const isLoginGuard = (to) =>
   token.value && (to.name === "login" || to.name === "register"); // 登入不能回登入註冊頁
 
-const isDepositOrder = (to, from) =>
-  orderNum.value && to.name === "deposit" && from.name === "depositForm";
-
-const isDeleteOrder = (to, from) =>
-  !orderNum.value && from.name === "deposit" && to.name === "depositForm";
-
-const isEditGcash = (to) => {
-  if (to.name === "editGCash" && !getEditNum("edit_phone")) {
-    return true;
-  }
-};
-
 const isLogin = (from) => {
   token.value && from.name === "login";
 };
@@ -517,24 +321,6 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  const enterOrder = isDepositOrder(to, from);
-  if (enterOrder) {
-    router.push("/member/memberCenter");
-    return;
-  }
-
-  const afterDeleteOrder = isDeleteOrder(to, from);
-  if (afterDeleteOrder) {
-    router.push("/member/memberCenter");
-    return;
-  }
-
-  const afterEditGcash = isEditGcash(to, from);
-  if (afterEditGcash) {
-    router.push("/member/memberCenter");
-    return;
-  }
-
   const getRegisterUuid = isRegister(to, from);
   if (getRegisterUuid) {
     const url = window.location.href;
@@ -544,8 +330,6 @@ router.beforeEach((to, from, next) => {
       Uuid.value = lastSegment;
       setUuid(Uuid.value);
     }
-
-    console.log(lastSegment);
   }
 
   const removeRegisterUuid = isLogOut(to, from);

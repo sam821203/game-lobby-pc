@@ -165,8 +165,8 @@ const readQA = (index) => {
 h2 {
   margin: 0 0 16px 0;
   font-size: 16px;
-  line-height: 150%;
-  color: $primary-title;
+  line-height: 1.5;
+  color: $title;
 }
 ul {
   padding-right: 8px;
@@ -174,25 +174,27 @@ ul {
 li {
   width: 100%;
   height: auto;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   cursor: pointer;
   user-select: none;
   &:last-child {
     border-bottom: 0;
   }
   .item-box {
+    position: relative;
+    z-index: 20;
     display: flex;
     align-items: center;
     width: 100%;
     min-height: 40px;
     line-height: 40px;
-    margin-bottom: 4px;
-    background-color: $modal-key;
-    border-radius: 6px;
+    margin-bottom: -4px;
+    background: $modal-key;
+    border-radius: $border-radius-md;
     .item-title {
       width: 100%;
-      font-size: 12px;
-      color: $primary-white;
+      font-size: 14px;
+      color: $title2;
     }
     .list-open {
       width: 6px;
@@ -205,14 +207,14 @@ li {
   }
   .content {
     width: 100%;
-    padding-top: 12px;
+    padding-top: 16px;
     padding-bottom: 12px;
     margin-bottom: 12px;
-    font-size: 12px;
-    color: $primary-text;
+    font-size: 14px;
+    color: $content-text-2;
     line-height: 1.5;
-    background-color: #351748;
-    border-radius: 6px;
+    background: $group-content-box-bg;
+    border-radius: 0 0 $border-radius-md $border-radius-md;
     p {
       padding-left: 4%;
       padding-right: 4%;

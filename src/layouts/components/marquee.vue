@@ -1,8 +1,5 @@
 <template>
   <div class="marquee">
-    <div class="imgWrap" v-if="false">
-      <img src="@/assets/images/layouts/sound_on.png" alt="" class="switch" />
-    </div>
     <div ref="marqueeWrap" class="marqueeWrap">
       <span ref="marqueeDom">{{ marqueeText }}</span>
     </div>
@@ -144,8 +141,8 @@ onBeforeUnmount(() => {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background: #0f0f11;
-    border: 2px solid #2c2a2f;
+    background: $marquee-bg;
+    border: 2px solid $marquee-border;
     height: 2rem;
     color: white;
     border-radius: 2rem;
@@ -159,24 +156,6 @@ onBeforeUnmount(() => {
     font-size: 1.2rem;
     white-space: nowrap;
     vertical-align: middle;
-  }
-  .imgWrap {
-    width: 20%;
-    height: 1.5rem;
-    position: absolute;
-    background: #434e64;
-    border-radius: 15px 0 0 15px;
-    margin-left: -2%;
-    z-index: 20;
-    .switch {
-      width: 18px;
-      object-fit: contain;
-      z-index: 10;
-      background: #434e64;
-      border-radius: 15px;
-      margin-left: 5px;
-      margin-top: 4px;
-    }
   }
 }
 </style>

@@ -32,3 +32,11 @@ export const switchSoundApi = (data) => {
     data,
   });
 };
+
+// 獲取代理版型
+export const getAgentStyleApi = (agent) => {
+  return request()({
+    url: `/member/lobbystyle?agent=${agent}`,
+    method: "get",
+  });
+};

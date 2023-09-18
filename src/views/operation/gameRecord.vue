@@ -22,66 +22,80 @@
       {{ $t("gameRecord.十四日") }}
     </div>
   </div>
-  <!--  -->
-  <table>
-    <thead>
+  <!-- <table>
+    <thead class="playerInfo">
       <tr>
-        <!-- <td>{{ $t("gameRecord.time") }}</td> -->
-        <!-- <td>{{ $t("gameRecord.game") }}</td> -->
-        <td>{{ $t("gameRecord.totalBets") }}</td>
-        <td>{{ $t("gameRecord.有效投注") }}</td>
-        <td>{{ $t("gameRecord.winLose") }}</td>
-      </tr>
-      <tr>
-        <!-- <td>{{ $t("Summary") }}</td> -->
-        <!-- <td></td> -->
-        <td v-price="totalbet"></td>
-        <td v-price="totalValidbet"></td>
-        <td v-price="totalWinLose"></td>
-        <!-- <td></td> -->
-      </tr>
-    </thead>
-  </table>
-  <table>
-    <thead>
-      <tr>
-        <td>{{ $t("gameRecord.time") }}</td>
-        <td>{{ $t("gameRecord.game") }}</td>
-        <td>{{ $t("gameRecord.totalBets") }}</td>
-        <td>{{ $t("gameRecord.有效投注") }}</td>
-        <td>{{ $t("gameRecord.winLose") }}</td>
         <td></td>
+        <td></td>
+        <td></td>
+        <td v-price="totalbet" class="totalbet"></td>
+        <td v-price="totalValidbet" class="totalValidbet"></td>
+        <td
+          v-price="totalWinLose"
+          class="totalWinLose"
+          :style="{ color: totalWinLose / 10000 < 0 ? '#c80000' : 'green' }"
+        ></td>
       </tr>
     </thead>
-    <tbody>
-      <template v-for="(v, k) in tradeRecord_Data" :key="k + 'k'">
-        <tr>
-          <td>{{ new Date(v.created_at).toLocaleString("en-GB") }}</td>
-          <td>{{ codeToName(v.game_code, v.studio) }}</td>
+  </table> -->
+  <div class="content">
+    <table>
+      <thead class="listTitle">
+        <tr class="playerData">
+          <td></td>
+          <td></td>
+
+          <td v-price="totalbet" class="totalbet"></td>
+          <td v-price="totalValidbet" class="totalValidbet"></td>
           <td
-            v-price="v.bet"
-            :style="{ color: v.bet < 0 ? '#c80000' : '' }"
+            v-price="totalWinLose"
+            class="totalWinLose"
+            :style="{ color: totalWinLose / 10000 < 0 ? '#c80000' : 'green' }"
           ></td>
-          <td v-price="v.valid_bet"></td>
-          <td
-            v-price="v.winlose"
-            :style="{ color: v.winlose < 0 ? '#c80000' : '' }"
-          ></td>
-          <td>
-            <span
-              v-if="
-                v.studio == 'goldenwind' ||
-                v.studio == 'joygames' ||
-                v.studio == 'jili'
-              "
-              @click="godist2(v)"
-              >></span
-            >
-          </td>
+          <td></td>
         </tr>
-      </template>
-    </tbody>
-  </table>
+
+        <tr>
+          <td>{{ $t("gameRecord.time") }}</td>
+          <td>{{ $t("gameRecord.game") }}</td>
+          <td>{{ $t("gameRecord.totalBets") }}</td>
+          <td>{{ $t("gameRecord.有效投注") }}</td>
+          <td>{{ $t("gameRecord.winLose") }}</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-for="(v, k) in tradeRecord_Data" :key="k + 'k'">
+          <tr :class="[{ odd: k % 2 === 0 }, { even: k % 2 !== 0 }]">
+            <td>{{ new Date(v.created_at).toLocaleString("en-GB") }}</td>
+            <td>
+              {{ codeToName(v.game_code, v.studio) }}
+            </td>
+            <td
+              v-price="v.bet"
+              :style="{ color: v.bet < 0 ? '#c80000' : '' }"
+            ></td>
+            <td v-price="v.valid_bet"></td>
+            <td
+              v-price="v.winlose"
+              :style="{ color: v.winlose < 0 ? '#c80000' : 'green' }"
+            ></td>
+            <td>
+              <span
+                v-if="
+                  v.studio == 'goldenwind' ||
+                  v.studio == 'joygames' ||
+                  v.studio == 'jili'
+                "
+                @click="godist2(v)"
+                >></span
+              >
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
   <!-- <div class="rankContentbottom">
     <div class="first">
       <div class="rankWord">
@@ -303,12 +317,18 @@ const getdata = async () => {
 };
 
 const codeToName = (e, gametype) => {
-  if (gametype == "goldenwind") {
-    return gameNameToHASHWord(Number(e)); //哈希遊戲
-  } else if (gametype == "joygames") {
-    return electronGamesData[e].name.en; // electrongame
+  if (otherPlatformGameList[gametype] == undefined) {
+    return "PP-Game";
+  } else if (otherPlatformGameList[gametype][e] == undefined) {
+    return "PP-Game";
   } else {
-    return otherPlatformGameList[gametype][e].gameName.en;
+    if (gametype == "goldenwind") {
+      return gameNameToHASHWord(Number(e)); //哈希遊戲
+    } else if (gametype == "joygames") {
+      return electronGamesData[e].name.en; // electrongame
+    } else {
+      return otherPlatformGameList[gametype][e].gameName.en;
+    }
   }
 };
 // 把array轉成json
@@ -324,21 +344,51 @@ electronArrayDataTOJSON();
 const get_other_Platform_GameList = () => {
   var dada = getotherplatformGameList();
   dada.forEach((el) => {
-    if (el.studio != "goldenwind" && el.studio != "joygames") {
-      if (otherPlatformGameList[el.studio] == undefined) {
-        otherPlatformGameList[el.studio] = {};
-      }
+    // if (!otherPlatformGameList[el.studio][el.studio_game_id]) {
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName = {};
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName.en = "";
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName.tw = "";
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName.cn = "";
+    // }
+    // if (
+    //   el.studio !== "goldenwind" &&
+    //   el.studio !== "joygames" &&
+    //   el.studio !== "funky" &&
+    //   el.studio !== "evo" &&
+    //   el.studio !== "pg" &&
+    //   el.studio !== "facai" &&
+    //   el.studio !== "jili" &&
+    //   el.studio !== "PP" &&
+    //   el.studio !== "mgplus"
+    // ) {
+    //   otherPlatformGameList[el.studio] = {};
+    //   otherPlatformGameList[el.studio][el.studio_game_id] = {};
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName = {};
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName.en = "";
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName.tw = "";
+    //   otherPlatformGameList[el.studio][el.studio_game_id].gameName.cn = "";
+    // }
 
+    // if (el.studio !== "goldenwind" && el.studio !== "joygames") {
+    if (otherPlatformGameList[el.studio] == undefined) {
+      otherPlatformGameList[el.studio] = {};
       otherPlatformGameList[el.studio][el.studio_game_id] = {};
       otherPlatformGameList[el.studio][el.studio_game_id].gameName = {};
-      // otherPlatformGameList[el.studio_game_id].studio = el.studio;
-      otherPlatformGameList[el.studio][el.studio_game_id].gameName.en =
-        el.game_name_en;
-      otherPlatformGameList[el.studio][el.studio_game_id].gameName.tw =
-        el.game_name_tw;
-      otherPlatformGameList[el.studio][el.studio_game_id].gameName.cn =
-        el.game_name_cn;
+      otherPlatformGameList[el.studio][el.studio_game_id].gameName.en = "";
+      otherPlatformGameList[el.studio][el.studio_game_id].gameName.tw = "";
+      otherPlatformGameList[el.studio][el.studio_game_id].gameName.cn = "";
     }
+
+    otherPlatformGameList[el.studio][el.studio_game_id] = {};
+    otherPlatformGameList[el.studio][el.studio_game_id].gameName = {};
+    // otherPlatformGameList[el.studio_game_id].studio = el.studio;
+    otherPlatformGameList[el.studio][el.studio_game_id].gameName.en =
+      el.game_name_en;
+    otherPlatformGameList[el.studio][el.studio_game_id].gameName.tw =
+      el.game_name_tw;
+    otherPlatformGameList[el.studio][el.studio_game_id].gameName.cn =
+      el.game_name_cn;
+    // }
   });
 };
 get_other_Platform_GameList();
@@ -352,12 +402,12 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .btnGroup {
-  width: 100%;
-  padding: 0.5rem;
+  width: 50%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 3% 3% 0;
   div {
     padding: 0.5rem 1rem;
     width: 25%;
@@ -369,116 +419,144 @@ onMounted(() => {
     word-break: keep-all;
     text-align: center;
   }
-  .L1 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_L_1.png");
-  }
   .L2 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_L_2.png");
+    background: $my-func-button-bg;
+    border: $my-func-button-border 1px solid;
+    border-radius: 5px 0 0 5px;
   }
-  .M1 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_M_1.png");
+  .L1 {
+    background: $anotherservice-btn-bg;
+    border: transparent 1px solid;
+    border-radius: 5px 0 0 5px;
   }
   .M2 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_M_2.png");
+    background: $my-func-button-bg;
+    border: $my-func-button-border 1px solid;
   }
-  .R1 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_R_1.png");
+  .M1 {
+    background: $anotherservice-btn-bg;
+    border: transparent 1px solid;
   }
   .R2 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_R_2.png");
+    background: $my-func-button-bg;
+    border: $my-func-button-border 1px solid;
+    border-radius: 0px 5px 5px 0px;
+  }
+  .R1 {
+    background: $anotherservice-btn-bg;
+    border: transparent 1px solid;
+    border-radius: 0px 5px 5px 0px;
   }
 }
-.alltradeTypeOption {
-  width: 90%;
-  height: 40px;
-  margin: auto;
-  position: relative;
-  background: #0b1316;
-  > input {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    border: 0;
+.content {
+  max-height: 800px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: block;
+    // height: 10px;
+    width: 10px;
   }
-  .option {
-    position: absolute;
-    // height: 200px;
-    background: blue;
-    width: 100%;
-    top: 100%;
-    > div {
-      text-align: center;
-      color: white;
-      font-size: 2rem;
-      padding: 0.5rem;
-      // height: 40px;
-    }
-    > div:hover {
-      background: green;
-    }
+  &::-webkit-scrollbar-track {
+    background: $scrollbar-track-bg;
   }
-}
-table {
-  margin: auto;
-  width: calc(100%);
-  border-collapse: separate;
-  border-spacing: 0;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #2d4c76;
-  word-break: keep-all;
-  // border-collapse: collapse;
-  position: relative;
-  thead {
-    background: #2d4c76;
-    color: #5eeeff;
+  &::-webkit-scrollbar-thumb {
+    background: $scrollbar-thumb-bg;
+    border-radius: 20px;
+  }
 
-    td {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+  table {
+    padding: 2% 2% 0;
+    margin: auto;
+    width: calc(100%);
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: center;
+    font-size: 0.8rem;
+    // color: #2d4c76;
+    word-break: keep-all;
+    // border-collapse: collapse;
+    position: relative;
+
+    thead {
+      td {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
     }
-  }
-  tr {
-    width: 100%;
-    .rotate90 {
-      transform: rotate(90deg);
+
+    .playerInfo {
+      tr {
+        display: flex;
+        justify-content: end;
+        // .totalbet {
+        //   width: 23%;
+        // }
+
+        // .totalValidbet {
+        //   width: 16%;
+        // }
+        // .totalWinLose {
+        //   width: 14%;
+        // }
+      }
     }
-    td {
-      padding: 0.25rem 0;
+    .listTitle {
+      background: $my-func-button-bg;
+      color: rgb(180, 150, 227);
+      .playerData {
+        background: $leaderBoard-table-even-bg;
+      }
     }
-    td:nth-child(1) {
-      width: 25%;
-    }
-    td:nth-child(2) {
-      width: 25%;
-    }
-    // td:nth-child(3) {
-    //   width: 25%;
-    // }
-    // td:nth-child(4) {
-    //   width: 15%;
-    // }
-    td:nth-child(5) {
-      width: 7%;
-      padding-right: 0.5rem;
-    }
-  }
-  tfoot {
-    position: sticky;
-    width: 100%;
-    // max-width: 470px;
-    font-size: 1rem;
-    bottom: 4rem;
-    height: 4rem;
-    background: #2d4c76;
-    color: white;
     tr {
       width: 100%;
-      height: 100%;
+      height: 3rem;
+      line-height: 3rem;
+      .rotate90 {
+        transform: rotate(90deg);
+      }
+      // td {
+      //   padding: 0.25rem 0;
+      // }
+      // td:nth-child(1) {
+      //   width: 25%;
+      // }
+      // td:nth-child(2) {
+      //   width: 25%;
+      // }
+      // td:nth-child(3) {
+      //   width: 25%;
+      // }
+      // td:nth-child(4) {
+      //   width: 15%;
+      // }
+      // td:nth-child(5) {
+      //   width: 7%;
+      //   padding-right: 0.5rem;
+      // }
     }
-    // background: red;
+    .odd {
+      background: $func-button-bg-selected;
+      height: 50px;
+      line-height: 50px;
+    }
+    .even {
+      background: $my-func-button-bg;
+      height: 50px;
+      line-height: 50px;
+    }
+
+    tfoot {
+      position: sticky;
+      width: 100%;
+      font-size: 1rem;
+      bottom: 4rem;
+      height: 4rem;
+      color: white;
+      tr {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 }
 
@@ -489,7 +567,7 @@ iframe {
   width: 100%;
   height: 100%;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.5);
+  background: $popout-page-bg;
 }
 .closeIframe {
   position: fixed;

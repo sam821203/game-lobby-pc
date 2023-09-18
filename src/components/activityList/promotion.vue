@@ -1,5 +1,7 @@
 <template>
-  <div class="promotion" ref="promo">
+  <Announcement />
+  <MiddleBar />
+  <div class="promotion" ref="promo" v-if="eventData.length">
     <BaseHeader
       :content="'activityList.promotion'"
       :imgSrc="'activityList/promotions_1'"
@@ -25,38 +27,39 @@
         />
       </div>
       <div class="time">
-        <span v-time="new Date(v.start_time)"></span>
+        <span v-time="v.start_time"></span>
         ~
-        <span v-time="new Date(v.end_time)"></span>
+        <span v-time="v.end_time"></span>
       </div>
     </div>
-
     <!-- <img
       src="@/assets/images/activityList/up_button.png"
       class="top_btn"
       @click="scrollToTop"
     /> -->
   </div>
+  <p v-else class="no-data">Sem Anúncio</p>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store/index";
 import { getPlayerId } from "@/utils/cookie";
 import { storeToRefs } from "pinia";
 
+import Announcement from "@/views/home/components/announcement.vue";
+import MiddleBar from "@/views/home/components/middleBar.vue";
+
 const { useAnnouncement } = useStore();
-const { setPromotionScrollTop } = useAnnouncement();
-const { eventData, readedData, promotionScrollTop } = storeToRefs(
-  useAnnouncement()
-);
+const { eventData, readedData } = storeToRefs(useAnnouncement());
 const router = useRouter();
 
 const getAnnouncementImageUrl = (pid) => {
   var url = process.env.VUE_APP_GETEVENTIMG;
   return url + pid;
 };
+
 // const scrollToTop = function () {
 //   promo.value.scrollTo({
 //     top: 0,
@@ -67,40 +70,8 @@ const getAnnouncementImageUrl = (pid) => {
 
 const promo = ref(null);
 const detailPromotion = function (k) {
-  setPromotionScrollTop(promo.value.scrollTop);
   router.push(`/activity/detailpromotionActivity?key=${k}`);
 };
-
-const setActivityData = async () => {
-  for (let i = 0; i < eventData.value.length; i++) {
-    return;
-  }
-};
-
-const promotionHeight = ref("");
-const adjustHeight = async () => {
-  promotionHeight.value = `calc(${window.innerHeight}px - 13.5rem)`;
-};
-watch(eventData, () => {
-  if (getPlayerId() != undefined) {
-    setActivityData();
-  }
-});
-onMounted(async () => {
-  // console.log(getPlayerId());
-  await adjustHeight();
-  window.addEventListener("resize", () => {
-    adjustHeight();
-  });
-  // setTimeout(() => {
-  // console.log(router.options.history.state.);
-  await promo.value.scrollTo({
-    top: promotionScrollTop.value,
-    left: 0,
-    behavior: "auto",
-  });
-  // }, 10);
-});
 </script>
 
 <style lang="scss" scoped>
@@ -126,7 +97,7 @@ onMounted(async () => {
     margin: 0 0 4px 0;
     font-size: 16px;
     line-height: 150%;
-    color: $primary-title;
+    color: $title;
   }
   .new {
     float: right;
@@ -134,7 +105,7 @@ onMounted(async () => {
   }
   .time {
     font-size: 15px;
-    color: $secondary-text;
+    color: $func-button-color-default;
   }
   .top_btn {
     position: sticky;
@@ -144,5 +115,25 @@ onMounted(async () => {
     left: 85%;
     display: inline-block;
   }
+}
+.no-data {
+  text-align: center;
+  padding-top: 20%;
+  color: $primary;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  background: $func-button-color-default;
+  border-radius: 10px;
+}
+.view-wrap {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 </style>

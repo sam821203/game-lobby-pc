@@ -117,6 +117,7 @@ export const setPixKey = (PIXKey) => setCookie("PixKey", PIXKey);
 export const setWithdrawType = (withdrawType) =>
   setCookie("withdraw_type", withdrawType);
 export const setBankId = (id) => setCookie("bank_id", id);
+export const setBankRoute = (route) => setCookie("bank_route", route);
 
 export const getWithdrawWay = () => getCookie("withdraw_way");
 export const getWithdrawAm = () => getCookie("withdraw_am");
@@ -128,6 +129,7 @@ export const getPixType = () => getCookie("PixType");
 export const getPixKey = () => getCookie("PixKey");
 export const getWithdrawType = () => getCookie("withdraw_type");
 export const getBankId = () => getCookie("bank_id");
+export const getBankRoute = () => getCookie("bank_route");
 
 export const removeBankNum = () => removeCookie("bank_acc_num");
 export const removeBankName = () => removeCookie("bank_acc_name");

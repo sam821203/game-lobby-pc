@@ -35,14 +35,6 @@ const initState = {
 export const useAuth = defineStore("userStore", {
   state: () => initState,
   actions: {
-    // async getCoin() {
-    //   const coinApiRes = await coinApi();
-    //   console.log(coinApiRes.data.data);
-    //   // coinApiRes.data?.data?.wallet?.filter((item) => item.currency === curCoinType)
-    //   // this.wallet_id = coinApiRes.data.data.wallet.filter(
-    //   //   (item) => item.currency === curCoinType
-    //   // )[0].wallet_id;
-    // },
     async login({ account, password, memoryAc }) {
       try {
         const res = await loginApi({ account, password });

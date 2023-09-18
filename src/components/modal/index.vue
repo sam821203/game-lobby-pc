@@ -7,11 +7,11 @@
 
 <script setup>
 import Email from "@/components/popout/memberCenter/email.vue";
-import GCashList from "@/components/popout/memberCenter/gCashList";
+// import GCashList from "@/components/popout/memberCenter/gCashList";
 import AnnouncementDetailPopOut from "@/components/popout/announcementDetailPopOut";
-import FriendQRcode from "@/components/popout/friendQRcode";
+// import FriendQRcode from "@/components/popout/friendQRcode";
 import UpgradeAccount from "@/components/popout/upgradeAccount";
-import depositPopout from "@/components/popout/depositPopout";
+// import depositPopout from "@/components/popout/depositPopout";
 import { onBeforeUnmount, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useModal } from "@/store/modalStore";
@@ -21,11 +21,11 @@ const { curModal } = storeToRefs(modalStore);
 const modal = {
   Email,
   AnnouncementDetailPopOut,
-  FriendQRcode,
-  GCashList,
+  // FriendQRcode,
+  // GCashList,
   AnnouncementBrief,
   UpgradeAccount,
-  depositPopout,
+  // depositPopout,
 };
 onBeforeUnmount(() => {
   modalStore.$reset();

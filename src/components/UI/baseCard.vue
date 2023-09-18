@@ -18,8 +18,8 @@ defineProps({
 .base {
   padding: 32px;
   border-radius: $border-radius-md;
-  background-color: $secondary-bg;
+  background: $group-content-box-bg;
   line-height: 150%;
-  color: $primary-white;
+  color: $title2;
 }
 </style>

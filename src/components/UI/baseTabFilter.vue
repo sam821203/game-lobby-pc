@@ -25,7 +25,7 @@ defineProps({
     default: null,
   },
   showStatus: {
-    type: Boolean,
+    type: [Boolean, Function],
     required: true,
     default: true,
   },
@@ -48,33 +48,40 @@ defineProps({
 .select-group {
   display: flex;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   label {
     display: inline-block;
     width: 120px;
-    height: 40px;
+    min-height: 40px;
     margin-left: 6px;
     margin-right: 6px;
-    line-height: 40px;
+    // line-height: 40px;
     text-align: center;
     cursor: pointer;
     user-select: none;
   }
   .btn-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 6px 8px;
     border-radius: $border-radius-md;
-    background-color: $button-disabled;
+    background: $button-disabled-bg;
     transition: all 0.2s ease;
     &:hover {
-      background: darken($button-disabled, 6%);
+      background: $button-disabled-bg-darken;
+      filter: brightness(94%);
     }
   }
   input {
     display: none;
   }
   input:checked + .btn-text {
-    background-color: $modal-key;
+    background: $button-selected-bg;
     &:hover {
-      background: darken($modal-key, 6%);
+      background: $button-selected-bg-darken;
+      filter: brightness(94%);
     }
   }
 }

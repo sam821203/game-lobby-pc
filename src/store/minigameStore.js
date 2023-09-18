@@ -32,7 +32,6 @@ export const useMinigame = defineStore("minigameStore", {
     async getMiniGameData(game) {
       const { data } = await minigameDataApi(game);
       if (data.code === 0) {
-        console.log(data.data);
         let cash = [];
         cash.push(data.data.level);
         if (game === "patrick") {
@@ -43,8 +42,6 @@ export const useMinigame = defineStore("minigameStore", {
           cash.push(data.data.stage);
           cash.push(data.data.reward / 10000);
         }
-
-        console.log(cash);
         this.result = cash;
         this.isSuccess = true;
       } else {

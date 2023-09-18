@@ -1,71 +1,29 @@
 <template>
   <div class="activityList">
-    <div class="all">
-      <div
-        :class="[activitySelected == 'promotion' ? 'selectedL' : '']"
-        @click="changeAct('promotion')"
-      >
-        {{ $t("activityList.promotion") }}
-      </div>
-      <div
-        :class="[activitySelected == 'getRecord' ? 'selectedR' : '']"
-        @click="changeAct('getRecord')"
-      >
-        {{ $t("activityList.participation") }}
-      </div>
-    </div>
     <div class="detail">
-      <promotion v-if="activitySelected == 'promotion'" />
-      <getRecord v-if="activitySelected == 'getRecord'" />
+      <promotion v-if="activitySelected.selectStatus == 'promotion'" />
+      <getRecord v-if="activitySelected.selectStatus == 'getRecord'" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+// import { ref } from "vue";
+import { useRoute } from "vue-router";
 import promotion from "@/components/activityList/promotion.vue";
 import getRecord from "@/components/activityList/getRecord.vue";
-import { getPlayerId } from "@/utils/cookie";
 import { useStore } from "@/store/index";
-import { usectrlLogin } from "@/store/ctrlLogin";
 
 const route = useRoute();
-const router = useRouter();
-
-const activitySelected = ref("promotion");
-if (route.query?.selected) {
-  activitySelected.value = "getRecord";
-}
-
-const { useMessage } = useStore();
-const { openMsg } = useMessage();
-
-const changeAct = (e) => {
-  switch (e) {
-    case "promotion":
-      break;
-    case "getRecord":
-      break;
-  }
-  if (getPlayerId() == undefined) {
-    openMsg({ content: "請先登入 / 註冊" }).then(() => {
-      router.push("/home");
-      usectrlLogin().$patch({
-        loginpageStatus: true,
-      });
-    });
-    return;
-  }
-  activitySelected.value = e;
-};
+const { useActivityList } = useStore();
+const activitySelected = useActivityList();
+if (route.query?.selected) activitySelected.selectStatus = "getRecord";
 </script>
 
 <style lang="scss" scoped>
 .activityList {
   width: 100%;
   height: calc(100%);
-  // background-color: antiquewhite;
   display: flex;
   flex-direction: column;
   .all {
@@ -101,7 +59,6 @@ const changeAct = (e) => {
   }
   .detail {
     height: calc(100% - 2.8rem);
-    // background: blue;
   }
 }
 </style>

@@ -7,7 +7,7 @@
         {{ data.type }}
       </BaseTag>
       <div>{{ data.title }}</div>
-      <div v-time="data.time">{{ data.time }}</div>
+      <div v-time="data.time"></div>
     </div>
     <p class="content" v-html="data.content"></p>
     <div class="btn">
@@ -19,37 +19,38 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "@/store/index";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import Announcement from "@/views/home/components/announcement.vue";
 import MiddleBar from "@/views/home/components/middleBar.vue";
 import BaseButton from "@/components/form/baseButton.vue";
 
-// const route = useRoute();
+const route = useRoute();
 const router = useRouter();
 const { useAnnouncement } = useStore();
 const announcementStore = useAnnouncement();
 const { normalData } = storeToRefs(announcementStore);
 
-const data = reactive({
+const data = ref({
   type: null,
   title: "",
   time: "",
   content: "",
 });
 
-if (normalData.value[0] === undefined) {
+if (normalData.value.length === 0) {
   router.push("/info/announcement");
 } else {
-  normalData.value.forEach((item) => {
-    data.type = item.type;
-    data.title = item.title;
-    data.time = item.end_time;
-    data.content = item.data;
-  });
+  const currentData = normalData.value[route.query.key];
+  data.value = {
+    type: currentData.type,
+    title: currentData.title,
+    time: currentData.start_time,
+    content: currentData.data,
+  };
 }
 </script>
 
@@ -57,7 +58,7 @@ if (normalData.value[0] === undefined) {
 .detail {
   padding: 12px 8px;
   margin-top: 32px;
-  color: $primary-white;
+  color: $title2;
 }
 .header {
   display: flex;
@@ -72,7 +73,7 @@ if (normalData.value[0] === undefined) {
     }
     &:last-child {
       width: calc(20% - 21.3px);
-      color: $secondary-text;
+      color: $func-button-color-default;
       font-size: 12px;
       text-align: right;
       letter-spacing: 0.8px;
@@ -84,7 +85,7 @@ if (normalData.value[0] === undefined) {
   padding: 32px;
   margin-bottom: 32px;
   border-radius: $border-radius-md;
-  background-color: $secondary-bg;
+  background: $group-content-box-bg;
   line-height: 150%;
 }
 .btn {

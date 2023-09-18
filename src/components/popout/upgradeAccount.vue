@@ -1,4 +1,5 @@
 <template>
+  <!-- 測試帳號專用，目前沒用，先留著 -->
   <ModalLayout>
     <template #default>
       <div class="content-wrap step1" v-if="step === 'step1'">
@@ -85,7 +86,6 @@ const getTestwallet = async () => {
   const testWalletRes = await testWalletApi();
   balance.value = testWalletRes.data.data.balance;
   flow.value = testWalletRes.data.data.flow;
-  console.log(testWalletRes);
 };
 getTestwallet();
 
@@ -103,9 +103,7 @@ const upgrade = async () => {
     step.value === "step3" &&
     input.value.replace(/\s+/g, "").toUpperCase() === "NO"
   ) {
-    console.log("upgrade");
     const upgradeRes = await upgradeUserApi();
-    console.log(upgradeRes);
     if (upgradeRes) {
       openMsg({
         content: "Congratulation!\nYou are now a Regular Account",
@@ -222,7 +220,7 @@ const noBonus = () => {
       padding: 3%;
       margin-top: 3%;
       width: 80%;
-      border-radius: 8px;
+      border-radius: $border-radius-md;
       &::-webkit-input-placeholder {
         text-align: center;
       }

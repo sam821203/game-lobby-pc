@@ -53,7 +53,6 @@ export const useSsevent = defineStore("sseventStore", {
         const { useAuth } = store;
         const { logout } = useAuth();
         logout();
-        console.log(123, e.data);
         try {
           await openMsg({
             content: e.data,
@@ -69,7 +68,6 @@ export const useSsevent = defineStore("sseventStore", {
       }
     },
     async _updateBalanceListener(e) {
-      console.log(JSON.parse(e.data), "-----balance-----");
       const currency = JSON.parse(e.data)?.currency;
       this.balanceData[currency].balance = JSON.parse(e.data)?.balance;
     },
@@ -84,7 +82,7 @@ export const useSsevent = defineStore("sseventStore", {
         return setTimeout(() => (this.errorSataus = false), 1000);
       }
       if (e.data) {
-        getMailNotification();
+        getMailNotification(789);
       }
     },
     _getErrorListener(e) {

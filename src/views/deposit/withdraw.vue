@@ -2,13 +2,6 @@
   <div class="withdraw-wrapper">
     <div class="wallet-info">
       <div class="item">
-        <p class="title">{{ $t("stored.balance") }}</p>
-        <div class="coin-wrap">
-          <img src="@/assets/images/COIN1.png" alt="" class="coin" />
-          <p class="content" v-price="balanceData[walletType]?.balance"></p>
-        </div>
-      </div>
-      <div class="item">
         <p class="title">{{ $t("stored.validBets") }}</p>
         <p class="content" v-price="wallet[0].flow"></p>
       </div>
@@ -16,10 +9,16 @@
         <p class="title">{{ $t("stored.threshold") }}</p>
         <p class="content" v-price="wallet[0].cash_out_gateway"></p>
       </div>
+      <div class="item">
+        <p class="title">{{ $t("stored.balance") }}</p>
+        <div class="coin-wrap">
+          <img src="@/assets/images/COIN1.png" alt="" class="coin" />
+          <p class="content" v-price="balanceData[walletType]?.balance"></p>
+        </div>
+      </div>
     </div>
     <!-- 提款方式 -->
     <div class="withdraw-way">
-      <div class="title">{{ $t("提款方式") }}</div>
       <div class="content">
         <button
           v-for="(bank, index) in bankList"
@@ -29,8 +28,9 @@
             { selected: selected === index },
             { maintain: bank.maintain },
           ]"
-          @click="selectWay(bank.bank_id, index)"
+          @click="selectWay(bank.bank_id, bank.route[0], index)"
           :disabled="bank.maintain"
+          v-show="index == 0"
         >
           <p v-if="bank.maintain" class="maintainWords">
             <span>Em </span>
@@ -42,17 +42,19 @@
       </div>
     </div>
     <!-- 提款金額 -->
+
     <div class="withdraw-amount">
-      <div class="default" @click="inputFocus">
+      <div class="label">{{ $t("金額") }}</div>
+      <div class="default">
+        <!-- :placeholder="$t('stored.withdrawAmount')" -->
+
         <input
           type="number"
-          :placeholder="$t('stored.withdrawAmount')"
           class="amount"
           v-model="withdrawAmount"
           @keyup.enter="throttleSave"
           @keyup="handleInput"
           inputmode="numeric"
-          :disabled="disabled"
           min="0"
         />
         <img
@@ -62,8 +64,10 @@
           src="@/assets/images/memberCenter/cancel.png"
           alt=""
         />
-        <i class="bi bi-keyboard-fill" v-else></i>
+        <i class="bi"> R$ </i>
+        <!-- <i class="bi bi-keyboard-fill" v-else></i> -->
       </div>
+
       <div class="options">
         <div
           class="option"
@@ -74,9 +78,46 @@
           {{ option.label }}
         </div>
       </div>
+      <div class="notice">
+        Lembrete amigável! Por favor, feche o seu jogo antes de processar o
+        Depósito ou Sacar. Obrigado!
+      </div>
     </div>
-    <div></div>
-    <!-- <p class="remind">Saques restantes: {{ withdrawTime }}</p> -->
+    <div class="hr"></div>
+    <div class="addPix">
+      <div class="label">
+        {{ $t("請選擇PIX") }}
+      </div>
+      <div class="pixList">
+        <div class="pixItem empty" @click="goAdd_PIXPAGE">
+          <div class="plusPIXIcon">+</div>
+        </div>
+
+        <div
+          v-for="(item, index) in pixList"
+          :key="index"
+          @click="
+            handleGCashSelect(
+              item.taxid,
+              item.phone,
+              item.pixtype,
+              item.pixkey,
+              index
+            )
+          "
+          :class="[
+            'pixItem',
+            'notempty',
+            {
+              choosed: choosedPixNum == index,
+            },
+          ]"
+        >
+          <div class="pixType">{{ item.pixtype }}</div>
+          <div class="pixKey" v-slicePixKey:[16]="item.pixkey"></div>
+        </div>
+      </div>
+    </div>
     <button
       :class="[
         'confirm',
@@ -85,25 +126,34 @@
             !withdrawAmount ||
             withdrawAmount < 20 ||
             withdrawTime === 0 ||
-            disabled,
+            pixKey === '' ||
+            !pixKey ||
+            pixKey === undefined ||
+            pixKey === null,
         },
       ]"
       @click.prevent="throttleSave"
       :disabled="
-        !withdrawAmount || withdrawAmount < 20 || withdrawTime === 0 || disabled
+        !withdrawAmount ||
+        withdrawAmount < 20 ||
+        withdrawTime === 0 ||
+        pixKey === '' ||
+        !pixKey ||
+        pixKey === undefined ||
+        pixKey === null
       "
     >
       {{ $t("stored.OK") }}
+      <!-- {{ pixKey }} -->
     </button>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
 import { useMessage } from "@/store/msgStore";
 import { useStore } from "@/store/index";
-import { useRouter } from "vue-router";
-import { getBankApi } from "@/api/deposit";
+import { getBankApi, getGCashApi } from "@/api/deposit";
 import throttle from "@/utils/throttle";
 import { useDeposit } from "@/store/depositStore";
 import { storeToRefs } from "pinia";
@@ -115,6 +165,7 @@ import {
   setPixType,
   setPixKey,
   setBankId,
+  setBankRoute,
   removeBankNum,
   removeBankName,
   removeTaxId,
@@ -125,6 +176,15 @@ import {
 } from "@/utils/cookie";
 import i18n from "@/utils/i18n";
 const { t } = i18n.global;
+//
+import { usectrlLogin } from "@/store/ctrlLogin";
+const {
+  addpixPageStatus, //新增PIX頁面
+  withdrawalPageStatus, // 提款頁面
+  withdrawalPage_checkTradePwdStatus,
+} = storeToRefs(usectrlLogin());
+
+withdrawalPage_checkTradePwdStatus;
 const optionList = ref([
   { label: "20", amount: 20 },
   { label: "50", amount: 50 },
@@ -137,7 +197,7 @@ const optionList = ref([
 ]);
 const depositStore = useDeposit();
 const { taxId, phone, type, pixKey } = storeToRefs(depositStore);
-const { useModal, useAuth, useSsevent } = useStore();
+const { useAuth, useSsevent } = useStore();
 
 const authStore = useAuth();
 const { getUserInfo } = authStore;
@@ -160,9 +220,6 @@ const sseStore = useSsevent();
 const { balanceData } = storeToRefs(sseStore);
 const flow = ref(wallet.value[0].flow);
 const gateway = ref(wallet.value[0].cash_out_gateway);
-const modalStore = useModal();
-const { toggleModal, modalType } = modalStore;
-const router = useRouter();
 const msg = useMessage();
 const { openMsg } = msg;
 const withdrawWay = ref("PIX");
@@ -175,41 +232,31 @@ const getBank = async () => {
   bankList.value = data.data.data.banks.filter(
     (bank) => bank.open === true && bank.type === "tixian"
   );
+  setBankRoute(bankList.value[0].route[0]);
+  setBankId(bankList.value[0].bank_id);
+
   if (bankList.value[0].maintain === true) {
-    selected.value = -1;
+    selected.value = 1;
+    setBankId(bankList.value[1].bank_id);
+    setBankRoute(bankList.value[1].route[0]);
   }
-
-  console.log(bankList.value);
-};
-
-onMounted(() => {
-  getBank();
-  if (phone.value !== null) {
-    selected.value = 0;
-    setBankId(10);
-  }
-});
-
-onBeforeUnmount(() => {
-  depositStore.$patch({
-    taxId: null,
-    phone: null,
-    type: null,
-    pixKey: null,
-    orderNum: null,
-  });
-});
-
-const selectWay = (id, index) => {
-  console.log(id);
   if (
     bankList.value[0].maintain === true &&
     bankList.value[1].maintain === true
   ) {
     selected.value = -1;
-    disabled.value = true;
+  }
+};
+
+const selectWay = (id, route, index) => {
+  if (
+    bankList.value[0].maintain === true &&
+    bankList.value[1].maintain === true
+  ) {
+    selected.value = -1;
   } else {
     setBankId(id);
+    setBankRoute(route);
     selected.value = index;
   }
 };
@@ -217,57 +264,34 @@ const addAmount = (amount, label) => {
   if (bankList.value[0].maintain === true) {
     return;
   }
-
+  if (withdrawAmount.value === "") {
+    withdrawAmount.value = Number(0);
+  }
   let balance = balanceData.value[walletType.value].balance / 10000;
-  if (!taxId.value && !phone.value && !type.value && !pixKey.value) {
-    withdrawAmount.value = null;
-    toggleModal(true);
-    modalType("GCashList", "longContent");
-  } else {
-    if (label === "max") {
-      disabled.value = false;
-      if (balance < maxAm.value) {
-        withdrawAmount.value = Math.floor(balance);
-      } else {
-        withdrawAmount.value = maxAm.value;
-      }
-    }
-
-    if (withdrawAmount.value + amount > balance) {
-      console.log("aaa");
-      disabled.value = false;
+  if (label === "max") {
+    if (balance < maxAm.value) {
       withdrawAmount.value = Math.floor(balance);
     } else {
-      disabled.value = false;
-      if (withdrawAmount.value + amount < maxAm.value) {
-        withdrawAmount.value += amount;
-      } else {
-        withdrawAmount.value = maxAm.value;
-      }
+      withdrawAmount.value = maxAm.value;
     }
   }
-};
 
-const disabled = ref(true);
-const inputFocus = () => {
-  if (
-    bankList.value[0].maintain === true &&
-    bankList.value[1].maintain === true
-  ) {
-    return;
-  }
-  if (!taxId.value && !phone.value && !type.value && !pixKey.value) {
-    disabled.value = true;
-    withdrawAmount.value = null;
-    toggleModal(true);
-    modalType("GCashList", "longContent");
+  if (withdrawAmount.value + amount > balance) {
+    withdrawAmount.value = Math.floor(balance);
   } else {
-    disabled.value = false;
+    if (withdrawAmount.value + amount < maxAm.value) {
+      withdrawAmount.value += amount;
+    } else {
+      withdrawAmount.value = maxAm.value;
+    }
   }
 };
 
 const handleInput = (e) => {
   if (e.key === "Backspace") {
+    return;
+  }
+  if (e.key === "Enter") {
     return;
   }
   let balance = balanceData.value[walletType.value].balance / 10000;
@@ -285,14 +309,16 @@ const handleInput = (e) => {
   if (withdrawAmount.value === 0) {
     withdrawAmount.value = null;
   }
-  console.log(typeof withdrawAmount.value);
 };
 
 const clear = () => {
   withdrawAmount.value = null;
 };
 
-const handleWithdraw = () => {
+const handleWithdraw = async (e) => {
+  if (e.key === "Enter") {
+    return;
+  }
   if (flow.value < gateway.value) {
     openMsg({
       content: t("有效投注不足"),
@@ -340,21 +366,80 @@ const handleWithdraw = () => {
     setPhoneNum(phone.value);
     setPixType(type.value);
     setPixKey(pixKey.value);
-    // setWithdrawType(withdrawType.value);
-    router.push("/deposit/withdrawForm");
+    withdrawalPageStatus.value = false;
+    withdrawalPage_checkTradePwdStatus.value = true;
+    // nextTick(() => {
+    //   withdrawalPage_checkTradePwdStatus.value = true;
+    // });
   }
 };
 const throttleSave = throttle(handleWithdraw, 3000, true);
+
+const goAdd_PIXPAGE = () => {
+  withdrawalPageStatus.value = false;
+  nextTick(() => {
+    addpixPageStatus.value = true;
+  });
+};
+//
+//
+// 選擇pix的部分
+const pixList = ref([]);
+const getGCash = async () => {
+  try {
+    const res = await getGCashApi();
+    if (res.data.code === 0) {
+      pixList.value = res.data.data?.bank_account?.brapay_addresses;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+// 判斷是選擇哪個PIX
+const choosedPixNum = ref(0);
+const handleGCashSelect = (taxid, phone, pixtype, pixkey, index) => {
+  depositStore.$patch({
+    taxId: taxid,
+    phone: phone,
+    type: pixtype,
+    pixKey: pixkey,
+  });
+  choosedPixNum.value = index;
+};
+//
+watch(pixList, (v) => {
+  if (v.length > 0) {
+    handleGCashSelect(v[0].taxid, v[0].phone, v[0].pixtype, v[0].pixkey, 0);
+  }
+});
+
+onMounted(() => {
+  getGCash();
+  getBank();
+  if (phone.value !== null) {
+    selected.value = 0;
+    setBankId(10);
+  }
+});
+
+onBeforeUnmount(() => {
+  depositStore.$patch({
+    taxId: null,
+    phone: null,
+    type: null,
+    pixKey: null,
+    orderNum: null,
+  });
+});
 </script>
 
 <style lang="scss" scoped>
 .withdraw-wrapper {
   color: $primary;
-  padding-bottom: 10%;
   .wallet-info {
     display: flex;
     justify-content: space-evenly;
-    height: 5rem;
+    height: 4rem;
     align-items: center;
     width: 100%;
     margin: 0 auto;
@@ -374,33 +459,28 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
         justify-content: center;
 
         .coin {
-          width: 24%;
+          width: 20%;
         }
       }
     }
   }
   .withdraw-way {
-    .title {
-      text-align: center;
-      margin-bottom: 5%;
-      color: #fff;
-      background-color: #8c17c2;
-      height: 2.5rem;
-      line-height: 2.5rem;
-    }
     .content {
+      margin: 0 auto;
       display: flex;
       flex-direction: row;
       justify-content: space-evenly;
+      width: 60%;
       .item {
-        padding: 2%;
         text-align: center;
         background: none;
+        padding: 2%;
+        border-radius: $border-radius-md;
+        border: 5px solid transparent;
         .icon {
-          width: 80px;
-          height: 80px;
+          width: 70px;
+          height: 70px;
         }
-
         .name {
           text-align: center;
           margin-top: 5%;
@@ -408,13 +488,11 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
         }
       }
       .selected {
-        padding: 3%;
         border: 5px solid #f7e4ff;
-        border-radius: 10px;
       }
       .maintain {
-        background: gray;
-        border-radius: 10px;
+        background: $disable-btn-color;
+        border-radius: $border-radius-md;
         position: relative;
         img {
           filter: brightness(0.5);
@@ -493,23 +571,32 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
     border-radius: 5px;
   }
   .withdraw-amount {
-    margin-top: 5%;
+    margin-top: 10px;
+    .label {
+      width: 90%;
+      font-weight: bold;
+      font-size: 1rem;
+      margin: 0 auto 5px auto;
+    }
     .default {
       width: 90%;
       height: 2.5rem;
       margin: 0 auto;
       text-align: center;
       line-height: 2.5rem;
-      border: 2px solid rgb(54, 100, 131);
+      border: 2px solid $withdraw-deposit-input-border;
       border-radius: 5px;
       position: relative;
+      background: $default-input-bg;
+      input {
+        background: none;
+      }
       .amount {
         font-weight: bold;
-        width: 100%;
-        text-align: center;
+        width: 75%;
+        text-align: right;
         outline: none;
-        background: none;
-        color: #fff;
+        color: white;
         &::-webkit-input-placeholder {
           text-align: center;
           color: #f7e4ff;
@@ -525,29 +612,27 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
         opacity: 0.6;
       }
       i {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
         position: absolute;
-        right: 5%;
-        top: -12%;
+        left: 5px;
+        top: -6%;
         font-weight: 600;
-        filter: contrast(0);
-        opacity: 0.6;
+        color: $withdraw-deposit-input-border;
       }
     }
     .options {
       width: 95%;
       margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 3%;
+      margin-top: 10px;
       .option {
-        width: 23%;
-        height: 2rem;
+        display: inline-block;
+        width: calc(30%);
+        height: 2.5rem;
+        line-height: 2.5rem;
         text-align: center;
-        line-height: 2rem;
-        border-radius: 10px;
-        background-color: #8c17c2;
+
+        border-radius: 5px;
+        background: $canclick-pageBtn-bg;
         margin: 1%;
         color: #fff;
         font-weight: 600;
@@ -562,16 +647,39 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
       margin: 0 auto;
       text-align: center;
       line-height: 2.5rem;
-      border: 2px solid rgb(54, 100, 131);
+      border: 2px solid $withdraw-deposit-input-border;
       border-radius: 5px;
-      .address {
-        width: 100%;
-        text-align: center;
+      position: relative;
+      input {
+        background: none;
+      }
+      .amount {
+        font-weight: bold;
+        width: 75%;
+        text-align: right;
         outline: none;
+        color: white;
         &::-webkit-input-placeholder {
           text-align: center;
-          color: rgb(49, 79, 118);
+          color: #f7e4ff;
         }
+      }
+      .clear {
+        width: 20px;
+        position: absolute;
+        right: 5%;
+        top: 25%;
+        font-weight: 600;
+        filter: contrast(0);
+        opacity: 0.6;
+      }
+      i {
+        font-size: 1.5rem;
+        position: absolute;
+        left: 5px;
+        top: -6%;
+        font-weight: 600;
+        color: $withdraw-deposit-input-border;
       }
     }
   }
@@ -582,11 +690,12 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
   .confirm {
     width: 90%;
     height: 2.5rem;
-    background-color: #8c17c2;
+    background: $canclick-pageBtn-bg;
     margin: 0 auto;
     text-align: center;
     line-height: 2.5rem;
-    border-radius: 10px;
+    border-radius: $border-radius-md;
+    margin-top: 10px;
     color: #fff;
     font-weight: 600;
     display: flex;
@@ -594,8 +703,85 @@ const throttleSave = throttle(handleWithdraw, 3000, true);
     align-items: center;
   }
   .disabled {
-    filter: grayscale(0.7);
-    color: gray;
+    // filter: grayscale(0.7);
+    // color: gray;
+    background: $button-disabled-bg;
   }
+  .hr {
+    // margin-top: 5%;
+    width: 90%;
+    border: 1px dashed $hr-primary;
+    margin: 10px auto;
+  }
+  .addPix {
+    > .label {
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .pixList {
+      max-height: 120px;
+      overflow-y: auto;
+      padding-right: 5px;
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        background: $hr-primary;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: $scrollbar-track-bg;
+        // border-radius: 20px;
+      }
+      &::-webkit-scrollbar-button {
+        // background: transparent;
+      }
+      .pixItem {
+        width: 100%;
+        height: 2.5rem;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        user-select: none;
+        &.notempty {
+          color: $withdraw-deposit-input-border;
+          border: 1px solid $withdraw-deposit-input-border;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 10px;
+          &.choosed {
+            color: $choosed-Content-Border;
+            border: 1px solid $choosed-Content-Border;
+          }
+          &.pixType,
+          &.pixKey {
+            font-size: 1.5rem;
+          }
+        }
+        &.empty {
+          color: $primary;
+          border: 1px dashed $primary;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .plusPIXIcon {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2.5px solid $primary;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+          }
+        }
+      }
+    }
+  }
+}
+.notice {
+  padding: 1rem 2.5rem 0 2.5rem;
+  text-align: center;
+  color: green;
 }
 </style>

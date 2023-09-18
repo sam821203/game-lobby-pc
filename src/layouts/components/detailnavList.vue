@@ -75,6 +75,19 @@
       />
       <span>{{ $t(v.word) }}</span>
     </div>
+    <div
+      v-for="(v, k) in bottomList"
+      :key="k"
+      class="listBtn"
+      @click="go(v)"
+      style="visibility: hidden"
+    >
+      <img
+        :src="require(`@/assets/images/mainMenu/${v.pic}_1.png`)"
+        class="icon"
+      />
+      <span>{{ $t(v.word) }}</span>
+    </div>
   </div>
 </template>
 
@@ -84,7 +97,7 @@ import Dot from "@/components/alertDot.vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStore } from "@/store/index";
-const { useGame, useAnnouncement, useAuth } = useStore();
+const { useGame, useAnnouncement, useAuth, useActivityList } = useStore();
 import { getGameListApi } from "@/api/game";
 //
 // 客服
@@ -100,7 +113,11 @@ const route = useRoute();
 const router = useRouter();
 
 const gameStore = useGame();
+const activitySelected = useActivityList();
 const { allGamesType } = storeToRefs(gameStore);
+//
+import { usectrlLogin } from "@/store/ctrlLogin";
+const { bgmStatus } = storeToRefs(usectrlLogin());
 // const props =
 defineProps({
   listStatus: {
@@ -127,7 +144,7 @@ const topList = [
 const bottomList = [
   {
     pic: "service",
-    word: "客服",
+    word: "線上客服",
   },
   {
     pic: "settings",
@@ -145,6 +162,8 @@ const studioAry = ref([
   "pg",
   "facai",
   "jili",
+  "mgplus",
+  "PP",
 ]);
 const categoryTans = (type) => {
   let category = "";
@@ -218,7 +237,6 @@ const getGameListHanlder = async (gameListParams, filter) => {
   isLoading.value = true;
   let { category, limit, offset, studio } = gameListParams;
   gameListRes.value = await getGameListApi({ category, limit, offset, studio });
-  console.log(gameListRes);
   isLoading.value = false;
   if (filter) {
     changeStudioList();
@@ -232,11 +250,12 @@ const totalStudios = ref([
   "pg",
   "facai",
   "jili",
+  "mgplus",
+  "PP",
 ]);
 const changeStudioList = () => {
   const studios = gameListRes.value.data.data.games.map((game) => game.studio);
   studioAry.value = totalStudios.value.filter((item) => studios.includes(item));
-  console.log(studioAry.value);
 };
 //
 const gotoGameLobby = (studio, gameType) => {
@@ -249,9 +268,9 @@ const gotoGameLobby = (studio, gameType) => {
 // 判斷目前是否要顯示搜尋的遊戲頁面
 const checkSearch = (gametype, studio) => {
   if (route.params.category == gametype && route.params.studio == studio) {
-    return 1;
-  } else {
     return 2;
+  } else {
+    return 1;
   }
 };
 //
@@ -261,19 +280,22 @@ const closeModal = () => {
 };
 //
 const go = (v) => {
-  console.log(v);
   switch (v.word) {
     case "公告":
       router.push(`/info/announcement`);
       break;
     case "優惠活動":
-      router.push(`/activity/activityList`);
+      activitySelected.selectStatus = "promotion";
+      router.push({
+        path: "/activity/activityList",
+      });
       break;
-    case "客服":
+    case "線上客服":
       setserviceConectData(true);
       break;
     case "設定":
-      router.push(`/setting/sound`);
+      // router.push(`/setting/sound`);
+      bgmStatus.value = true;
       break;
   }
   closeModal();
@@ -289,33 +311,34 @@ const go = (v) => {
   left: 0%;
   height: calc(100vh);
   padding: 0 1rem;
-  background: blue;
   opacity: 0.5;
   z-index: 21;
 }
 .detailList {
   width: 300px;
   position: fixed;
+  overflow-y: auto;
   // top: 0;
   top: $topBar-height;
   left: 0rem;
   // height: calc(100vh - 3.5rem);
-  padding: 0 1rem;
-  min-height: 100%;
-  background: green;
-  background-image: url("@/assets/images/mainMenu/background/flat.png");
-  background-size: 100% 100%;
+  padding: 0 1rem 2rem 1rem;
+  height: 100%;
+  background: $group-content-box-bg;
+  // background-image: url("@/assets/images/mainMenu/background/flat.png");
+  // background-size: 100% 100%;
   color: white;
   z-index: 22;
 }
 .listBtn {
-  // width: 100%;
-  font-size: 1rem;
-  padding: 0.5rem;
+  position: relative;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  position: relative;
+  // width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
   .icon {
     height: 2rem;
     object-fit: contain;
@@ -349,7 +372,9 @@ const go = (v) => {
         margin-right: 1rem;
       }
       .choosedFont {
-        color: pink;
+        // color: pink;
+        // color: white;
+        color: #a903d1;
       }
     }
   }

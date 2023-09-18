@@ -43,44 +43,6 @@ import "swiper/css/navigation";
 import "swiper/scss/pagination";
 
 const bannerModules = [Pagination, Autoplay];
-// const bannerAry = ref(null);
-
-// // 取得 banner 資料
-// const getBanners = async () => {
-//   const getBannersRes = await getBannersApi();
-//   console.log(getBannersRes);
-//   if (getBannersRes.data.code === 0) {
-//     bannerAry.value = getBannersRes.data.data;
-//   }
-// };
-// getBanners();
-
-// // 跳轉
-// const goBannerDetail = (url) => {
-//   if (url) {
-//     window.open(url);
-//   }
-// };
-
-// // 網址處理
-// const dealPic = (id) => {
-//   var url = process.env.VUE_APP_GETBANNER;
-//   if (id == "") {
-//     return;
-//   } else {
-//     return url + id;
-//   }
-// };
-
-// const gotoPromotionDetail = (i) => {
-//   if (i !== 5) {
-//     let url = `/activity/detailpromotionActivity?key=${i}`;
-//     console.log(url);
-//     router.push(url);
-//   } else {
-//     window.open("https://t.me/Lucky888CS");
-//   }
-// };
 
 const languageStore = useLanguage();
 const { curLang } = storeToRefs(languageStore);

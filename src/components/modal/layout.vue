@@ -30,7 +30,7 @@
 import { storeToRefs } from "pinia";
 import { useModal } from "@/store/modalStore";
 const modalStore = useModal();
-const { closeBtn } = storeToRefs(modalStore);
+const { closeBtn } = storeToRefs(useModal());
 const { toggleModal } = modalStore;
 // const { childView } = storeToRefs(modalStore);
 // const modalType = {
@@ -45,6 +45,7 @@ const clickBg = () => {
 };
 const closePopoutFunc = () => {
   toggleModal(false);
+  // announcementBriefPage.value = false;
 };
 defineProps({
   pageWidth: {

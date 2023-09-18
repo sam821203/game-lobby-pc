@@ -9,6 +9,7 @@ export const useModal = defineStore("modalStore", {
     isModalOpen: false,
     styleType: "",
     closeBtn: true,
+    announcementBriefPage: true, //一進入大廳跳出的公告訊息，要做到按下OK與點旁邊黑框一樣效果特規
   }),
   actions: {
     insertTag(data) {
@@ -24,11 +25,18 @@ export const useModal = defineStore("modalStore", {
       this.childView = childName;
     },
     toggleModal(boolean) {
-      this.isModalOpen = boolean;
-      if (!boolean) {
+      if (this.curModal === "AnnouncementBrief") {
+        this.announcementBriefPage = false;
         this.curModal = "";
         this.styleType = "";
         this.childView = "";
+      } else {
+        this.isModalOpen = boolean;
+        if (!boolean) {
+          this.curModal = "";
+          this.styleType = "";
+          this.childView = "";
+        }
       }
     },
   },

@@ -180,9 +180,6 @@
           {{ $t("termsOfService.content44") }}
         </p>
         <p>
-          {{ $t("termsOfService.content45") }}
-        </p>
-        <p>
           {{ $t("termsOfService.content46") }}
         </p>
         <p>
@@ -221,15 +218,25 @@
 h2 {
   font-size: 16px;
   line-height: 150%;
-  color: $primary-title;
+  color: $title;
   margin: 0 0 16px 0;
+}
+ul {
+  padding: 16px 20px;
+  background: $group-content-box-bg;
+  border-radius: $border-radius-md;
 }
 li {
   margin-bottom: 20px;
 }
 p {
-  font-size: 12px;
-  color: $primary-text;
-  line-height: 1.5;
+  font-size: 14px;
+  color: $content-text-2;
+  line-height: 1.6;
+}
+.title {
+  margin-bottom: 2px;
+  font-size: 16px;
+  color: $title2;
 }
 </style>

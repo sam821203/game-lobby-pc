@@ -1,5 +1,5 @@
 <template>
-  <div class="option-wrap">
+  <!-- <div class="option-wrap">
     <div
       :class="['option1', { serviceSelected: option === 'invite' }]"
       @click="switchContent('invite')"
@@ -19,31 +19,32 @@
     >
       {{ $t("好友列表") }}
     </div>
-  </div>
+  </div> -->
   <div>
-    <component :is="dyComp"></component>
+    <!-- <component :is="dyComp"></component> -->
+    <friendList />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+// import { ref, computed } from "vue";
 import friendList from "@/views/operation/friendList.vue";
-import invite from "@/views/operation/invite.vue";
-import rebate from "@/views/operation/rebate.vue";
+// import invite from "@/views/operation/invite.vue";
+// import rebate from "@/views/operation/rebate.vue";
 
-const option = ref("invite");
-const switchContent = (value) => {
-  option.value = value;
-};
-const views = { invite, rebate, friendList };
+// const option = ref("invite");
+// const switchContent = (value) => {
+//   option.value = value;
+// };
+// const views = { invite, rebate, friendList };
 
-const dyComp = computed(() => views[option.value]);
+// const dyComp = computed(() => views[option.value]);
 </script>
 
 <style lang="scss" scoped>
 .option-wrap {
   color: #fff;
-  border-radius: 10px;
+  border-radius: $border-radius-md;
   display: flex;
   justify-content: space-around;
   width: 95%;

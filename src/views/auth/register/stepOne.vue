@@ -43,7 +43,7 @@
         :required="true"
         :error="errors.confirmPassword"
       />
-      <BaseInput
+      <!-- <BaseInput
         :label="$t('register.tradePwd')"
         :placeholder="
           $t('register.wordLen', {
@@ -64,7 +64,7 @@
         :required="true"
         :error="errors.confirm_second_password"
       />
-      <p class="remind">{{ $t("此密碼將用於提款") }}</p>
+      <p class="remind">{{ $t("此密碼將用於提款") }}</p> -->
       <BaseInput
         :type="'text'"
         :label="$t('register.phone')"
@@ -76,6 +76,7 @@
         @inputFunction="throttleCheckPhone"
         :button-disabled="phoneValidate || msgCountdown > 0"
         :placeholder="'XX - XXXXXXXXX'"
+        mode="codes"
       />
       <!-- :placeholder="$t('register.phonePlaceholder')" -->
       <BaseInput
@@ -87,17 +88,13 @@
         :error="errors.phone_valid_code"
       />
       <baseButton
-        :class="['button', { disabledBtn: hasError }]"
+        :class="['button', 'submit', { disabledBtn: hasError }]"
         type="submit"
         :disabled="hasError"
         :bg-type="hasError ? 'disabledBtn' : 'confirmBtn'"
-        v-if="false"
       >
         {{ $t("login.submit") }}
       </baseButton>
-      <button type="submit" class="button submit">
-        {{ $t("註冊") }}
-      </button>
     </form>
   </div>
 </template>
@@ -111,8 +108,8 @@ import {
   loginAcValidate,
   passwordValidate,
   confirmPwdValidate,
-  tradePasswordValidate,
-  confirmTradePwdValidate,
+  // tradePasswordValidate,
+  // confirmTradePwdValidate,
 } from "@/utils/validate";
 import { useStore } from "@/store/index";
 import { checkAccountApi, checkPhoneApi, registerApi } from "@/api/user";
@@ -145,8 +142,8 @@ const validationSchema = object({
   loginac: loginAcValidate,
   loginpwd: passwordValidate,
   confirmPassword: confirmPwdValidate("loginpwd"),
-  secpwd: tradePasswordValidate,
-  confirm_second_password: confirmTradePwdValidate,
+  // secpwd: "",
+  // confirm_second_password: "",
   phone: string()
     // /^(09|639)\d{9}$/
     .matches(/^(?!0)\d{10,11}$/, "register.phoneConfirm")
@@ -165,11 +162,8 @@ const { handleSubmit, errors } = useForm({
 const { value: loginac, errors: acError } = useField("loginac", undefined);
 const { value: loginpwd } = useField("loginpwd", undefined);
 const { value: confirmPassword } = useField("confirmPassword", undefined);
-const { value: secpwd } = useField("secpwd", "");
-const { value: confirm_second_password } = useField(
-  "confirm_second_password",
-  ""
-);
+// const { value: secpwd } = "";
+// const { value: confirm_second_password } = "";
 const { value: phone, errors: phoneError } = useField("phone", undefined);
 const { value: phone_valid_code } = useField("phone_valid_code", undefined);
 
@@ -182,6 +176,8 @@ const save = handleSubmit(async (values) => {
   authStore.$patch({
     registerData: {
       ...apiData,
+      secpwd: "",
+      confirm_second_password: "",
     },
   });
   const loginData = await register(values);
@@ -352,7 +348,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 p {
-  color: red;
+  color: $error-color;
   margin-top: -2%;
   margin-bottom: 1%;
 }
@@ -361,10 +357,10 @@ p {
 }
 .button {
   width: 100%;
-  border-radius: 10px;
+  border-radius: $border-radius-md;
   &.submit {
     margin-top: 2rem;
-    background: #6b0185;
+    background: $confirm-btn-bg;
   }
 }
 </style>

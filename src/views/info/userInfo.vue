@@ -28,7 +28,7 @@
           />
         </div>
         <div class="input-wrap input-wrap2">
-          <div class="w-90">
+          <div class="w-100">
             <BaseInput
               v-if="editInput"
               :label="$t('register.name')"
@@ -47,17 +47,16 @@
               :disabled="true"
               :textRight="true"
             />
-          </div>
-
-          <div class="edit-wrap">
-            <img
-              src="@/assets/images/memberCenter/write.png"
-              alt=""
-              :class="['edit', { editing: editInput }]"
-              @click="edit"
-              v-if="!editInput"
-            />
-            <div class="mb-8" v-if="editInput" @click="editCheck()">✔</div>
+            <div class="edit-wrap">
+              <img
+                src="@/assets/images/memberCenter/write.png"
+                alt=""
+                :class="['edit', { editing: editInput }]"
+                @click="edit"
+                v-if="!editInput"
+              />
+              <div class="mb-8" v-if="editInput" @click="editCheck()">✔</div>
+            </div>
           </div>
         </div>
 
@@ -74,6 +73,11 @@
         <button
           class="button w-80 canclickBtn teach"
           @click="gotochangeLoginPwdPage"
+          v-if="
+            userInfo.account !== '' && userInfo.account !== undefined
+              ? !userInfo?.account.includes('_')
+              : false
+          "
         >
           <img src="@/assets/images/memberCenter/lock.png" />
           <span> {{ $t("修改密碼") }}</span>
@@ -96,7 +100,7 @@
 
 <script setup>
 import BaseInput from "@/components/form/baseInput.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useStore } from "@/store/index";
 import { storeToRefs } from "pinia";
 import { editRealNameApi } from "@/api/user";
@@ -111,22 +115,17 @@ const { openMsg } = useMessage();
 
 const { useAuth } = useStore();
 const auth = useAuth();
-// const { getUserInfo } = auth;
 const { userInfo } = storeToRefs(auth);
 const authStore = useAuth();
 const { getUserInfo } = authStore;
 const editInput = ref(false);
-// const name = ref(userInfo.value.real_name);
 
 const edit = () => {
   editInput.value = !editInput.value;
-  // name.value = userInfo.value.real_name;
 };
 
 const editCheck = async () => {
-  // console.log(name);
   const name = userInfo.value.real_name;
-  // console.log(name.length);
   if (
     name
       .toString()
@@ -144,19 +143,26 @@ const editCheck = async () => {
       .catch(() => {
         editInput.value = !editInput.value;
       });
-    // console.log(name);
-    console.log(userInfo.value.real_name);
   }
 };
+watch(userInfosetting, (v) => {
+  if (v) {
+    getUserInfo();
+  }
+});
 
 const save = async () => {
   const name = userInfo.value.real_name;
-  editInput.value = !editInput.value;
-  const res = await editRealNameApi({ real_name: name });
-  if (res.data.code === 0) {
-    getUserInfo();
+  if (editInput.value) {
+    editInput.value = false;
+    userInfosetting.value = false;
+  } else {
+    const res = await editRealNameApi({ real_name: name });
+    if (res.data.code === 0) {
+      getUserInfo();
+      userInfosetting.value = false;
+    }
   }
-  console.log(res);
 };
 
 const closeModal = () => {

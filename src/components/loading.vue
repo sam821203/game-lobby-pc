@@ -34,7 +34,7 @@
   height: 120vh;
   margin-top: -20%;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.5);
+  background: $popout-page-bg;
   .svg {
     animation: loading 1s linear infinite;
     margin-top: 50%;

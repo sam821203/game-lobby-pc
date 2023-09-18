@@ -30,8 +30,6 @@ const createPixi = () => {
       app.stage.addChild(animationInst.value);
       animationInst.value.state.setAnimation(0, animationSkin.value, true);
       const localRect = animationInst.value.getLocalBounds();
-      // animationInst.value.position.set(-localRect.x, -localRect.y);
-      // console.log(localRect
       animationInst.value.position.set(-localRect.x / 0.8, -localRect.y / 0.6);
       app.start();
     });

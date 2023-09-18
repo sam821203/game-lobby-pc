@@ -17,18 +17,21 @@
         />
       </div>
       <ul class="nav-items-list" v-if="!token">
-        <li class="button" @click="callAuth">
-          {{ $t("註冊登入") }}
+        <li class="button login" @click="callAuth(false)">
+          {{ $t("登入") }}
+        </li>
+        <li class="button register" @click="callAuth(true)">
+          {{ $t("註冊") }}
         </li>
       </ul>
       <ul class="link-list" v-else>
-        <div class="account" v-if="token" @click="switchMyList">
+        <div class="account" @click="switchMyList">
           <img src="@/assets/images/lobby/avatar.png" alt="" />
           <span>
             {{ userInfo?.account }}
           </span>
         </div>
-        <div class="balance" v-if="token">
+        <div class="balance" @click="depositPageStatus = true">
           <img src="@/assets/images/COIN1.png" class="coin1" />
           <span
             v-price="balanceData[walletType]?.balance"
@@ -37,12 +40,12 @@
           <!-- <span style="vertical-align: middle" v-else>0</span> -->
         </div>
 
-        <router-link to="/operation/vip" class="icon-link" v-if="token">
+        <router-link to="/operation/vip" class="icon-link">
           <img src="@/assets/images/lobby/vip_icon.png" alt="vip" class="vip" />
           <span class="vipLv">VIP{{ userInfo?.vip_level }}</span>
         </router-link>
         <!--  -->
-        <div class="email-wrap" v-if="token">
+        <div class="email-wrap">
           <div class="dot" v-if="isShowUnread === true"></div>
           <img
             src="@/assets/images/memberCenter/email.png"
@@ -86,12 +89,12 @@ const { balanceData } = storeToRefs(sseStore);
 const { token, userInfo, walletType } = storeToRefs(authStore);
 // const token = ref(false);
 
-// const { loginpageStatus } = storeToRefs(usectrlLogin);
-const callAuth = () => {
+const { depositPageStatus } = storeToRefs(usectrlLogin());
+const callAuth = (v) => {
   usectrlLogin().$patch({
-    loginpageStatus: true,
+    loginpageStatus: !v,
+    registerpageStatus: v,
   });
-  // console.log(123);
 };
 
 const goHome = () => {
@@ -135,7 +138,7 @@ const switchMyList = () => {
   width: 100%;
   z-index: $topBar-index;
   height: $topBar-height;
-  background: gray;
+  background: $indexNavbar-color;
   display: flex;
   align-items: center;
   padding: 0 1rem;
@@ -207,7 +210,7 @@ const switchMyList = () => {
       .account {
         border-radius: 20px;
         padding: 5px 15px;
-        background: #52416b;
+        background: $canclick-pageBtn-bg;
         font-size: 1.2rem;
         font-weight: bold;
         align-items: center;
@@ -235,7 +238,7 @@ const switchMyList = () => {
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        background: #52416b;
+        background: $canclick-pageBtn-bg;
         border-radius: 50%;
         margin-left: 0.5em;
         text-decoration: none;
@@ -263,7 +266,7 @@ const switchMyList = () => {
           width: 10px;
           height: 10px;
           border-radius: 50%;
-          background: red;
+          background: $error-color;
           position: absolute;
           right: 2px;
           top: 2px;
@@ -317,20 +320,17 @@ const switchMyList = () => {
         position: relative;
         animation-name: topAni;
         animation-duration: 1s;
-        // animation-delay: 5s;
         animation-iteration-count: infinite;
         animation-timing-function: linear;
-        // transform: scale(0.5);
-        &:first-child {
-          background-image: linear-gradient(to top right, #8400b0, #a903d2);
-          a {
-            color: #fff;
-          }
+        &.register {
+          background: $func-button-color-default;
         }
-        &:nth-child(2) {
-          background: #fff;
+        &.login {
+          background: $anotherservice-btn-bg;
+          // background-image: linear-gradient(to top right, #8400b0, #a903d2);
         }
         a {
+          color: #fff;
           text-decoration: none;
           padding: 5px 15px;
         }

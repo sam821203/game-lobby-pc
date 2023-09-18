@@ -2,7 +2,6 @@ const { defineConfig } = require("@vue/cli-service");
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const pkg = require("./package.json");
-
 const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 const IS_DEV = ["development", "dev", "test"].includes(process.env.NODE_ENV);
 process.env.VUE_APP_VERSION = pkg.version;
@@ -14,7 +13,7 @@ module.exports = defineConfig({
   css: {
     loaderOptions: {
       scss: {
-        additionalData: '@import "~@/assets/style/index.scss";',
+        additionalData: `@import "~@/assets/style/index.scss";`, // 預設的scss
       },
     },
   },

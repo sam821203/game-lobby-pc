@@ -10,7 +10,6 @@ export const useMail = defineStore("mailStore", {
     async getMailNotification() {
       const { data } = await mailNotificationApi();
       const unread = data.data.mail_unread;
-      console.log(data);
       if (data.code === 0) {
         if (unread > 0) {
           this.isShowUnread = true;

@@ -16,7 +16,9 @@
           }}</router-link>
         </div>
       </nav>
-      <router-view />
+      <div class="view-wrap">
+        <router-view />
+      </div>
     </div>
   </div>
 </template>
@@ -32,25 +34,25 @@
     padding-top: 30px;
     padding-left: 16px;
     padding-right: 16px;
-    background-color: $darkpageBottom-color;
+    background: $popoutTop-color;
     .links {
       display: flex;
       flex-direction: column;
       padding: 16px;
       border-radius: $border-radius-md;
-      background-color: $darkpageTop-color;
+      background: $group-content-box-bg;
     }
     a {
       padding: 6% 6% 4% 6%;
-      font-size: 12px;
-      color: $secondary-text;
+      font-size: 14px;
+      color: $func-button-color-default;
       text-align: center;
       font-weight: 600;
       text-decoration: none;
       border-radius: $border-radius-md;
       &.router-link-active {
-        color: $primary-title;
-        background-color: $primary-bg;
+        color: $title;
+        background: $func-button-bg-selected;
       }
     }
   }
@@ -75,7 +77,11 @@
 }
 ::-webkit-scrollbar-thumb {
   background: transparent;
-  border: 1px solid rgba(226, 208, 255, 0.35);
+  background: $scrollbar-thumb-bg;
   border-radius: 10px;
+}
+.view-wrap {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 </style>

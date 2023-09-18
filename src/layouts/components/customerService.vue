@@ -16,21 +16,19 @@ const { setserviceConectData } = serviceConect();
 
 <style lang="scss" scoped>
 .customerService {
-  pointer-events: none;
-  // background: red;
-  //   width: 4rem;
+  width: 100%;
   height: 3rem;
-  //   background: red;
-  position: sticky;
+  position: fixed;
   right: 0;
   bottom: 5rem;
+
+  pointer-events: none;
   z-index: 100;
-  //   overflow: hidden;
   img {
     position: absolute;
     height: 100%;
     object-fit: contain;
-    background-color: transparent;
+    background: transparent;
     right: 2rem;
     pointer-events: auto;
   }

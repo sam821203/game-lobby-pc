@@ -8,9 +8,7 @@
         alt=""
         v-if="hasImg"
       />
-      <span>
-        <slot></slot>
-      </span>
+      <slot></slot>
     </div>
   </button>
 </template>
@@ -67,9 +65,10 @@ defineExpose({
   font-weight: bold;
   color: #fff;
   line-height: 1.3;
-  background-color: transparent;
+  background: transparent;
   border: none;
   transition: all 0.2s ease;
+  user-select: none;
   cursor: pointer;
   .d-flex-center {
     display: flex;
@@ -79,34 +78,38 @@ defineExpose({
   &.big_confirmBtn {
     margin: auto;
     width: 80%;
+    margin: 0 10%;
     height: 100%;
-    background: $modal-key;
-    border-radius: 10px;
+    background: $confirm-btn-bg;
+    border-radius: $border-radius-md;
   }
 }
 
 .rounded {
   width: 200px;
-  height: 40px;
+  height: 40px !important;
   text-align: center;
   line-height: 40px;
   border-radius: $border-radius-md;
-  background-color: $modal-key;
+  background: $modal-key;
   &:hover {
-    background: darken($modal-key, 6%);
+    background: $button-selected-bg-darken;
+    filter: brightness(94%);
   }
 }
 .secondary {
   width: 120px;
-  background-color: $secondary-btn;
+  background: $func-button-color-default;
   &:hover {
-    background: darken($secondary-btn, 6%);
+    background: $func-button-color-default-darken;
+    filter: brightness(94%);
   }
 }
 .light {
-  background-color: $modal-key-light;
+  background: $anotherservice-btn-bg;
   &:hover {
-    background: darken($modal-key-light, 6%);
+    background: $anotherservice-btn-bg-darken;
+    filter: brightness(94%);
   }
 }
 </style>

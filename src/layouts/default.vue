@@ -21,7 +21,6 @@ const { token } = storeToRefs(authStore);
 .main {
   width: 100%;
   margin: $topBar-height 0 $downBar-height 0;
-  // background: $primary;
   &.notLogin {
     // margin: $notLogin-topBar-height 0 $downBar-height 0;
   }

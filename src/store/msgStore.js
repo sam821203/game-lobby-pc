@@ -8,12 +8,15 @@ export const useMessage = defineStore("msgStore", {
     resolve: null,
     reject: null,
     contentVal: null,
+    contentList: null,
     slot: "",
     hasCancel: false,
+    hasContentList: false,
     deposit: false,
     entryGame: false,
     joinGame: false,
     isContectService: false,
+    titleBar: true,
   }),
   actions: {
     /**
@@ -30,25 +33,30 @@ export const useMessage = defineStore("msgStore", {
       hasBtn = true,
       type = "normal",
       contentVal,
+      contentList,
       slot,
-      hasCancel,
+      hasCancel = false,
+      hasContentList = false,
       deposit,
       entryGame,
       joinGame,
       isContectService,
+      titleBar = true,
     }) {
       this.title = title;
       this.content = content;
       this.hasBtn = hasBtn;
       this.type = type;
       this.contentVal = contentVal;
+      this.contentList = contentList;
       this.slot = slot;
       this.hasCancel = hasCancel;
+      this.hasContentList = hasContentList;
       this.deposit = deposit;
       this.entryGame = entryGame;
       this.joinGame = joinGame;
       this.isContectService = isContectService;
-
+      this.titleBar = titleBar;
       return new Promise((resolve, reject) => {
         this.resolve = resolve;
         this.reject = reject;

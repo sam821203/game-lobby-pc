@@ -171,8 +171,6 @@ watch(isCanPlay, () => {
     bgType.value = isCanPlay.value ? "activity_button_2" : "activity_button_1";
   }
 });
-
-// watch(userInfo, (val) => {console.log("userInfo:" + val); });
 </script>
 
 <style lang="scss" scoped>
@@ -195,7 +193,7 @@ watch(isCanPlay, () => {
 }
 
 .iframe_Div {
-  background-color: rgba(0, 0, 0, 0.5);
+  background: $popout-page-bg;
   margin: 0 auto;
   width: 100%;
   top: 0;
@@ -214,13 +212,14 @@ iframe {
 }
 
 .miniGames {
-  pointer-events: none;
-  // background: red;
-  display: inline-block;
-  height: 4rem;
   width: 100%;
-  position: sticky;
+  height: 4rem;
+  position: fixed;
+  right: 0;
   bottom: 10rem;
+
+  pointer-events: none;
+  display: inline-block;
   z-index: 100;
   overflow: hidden;
   .icon {
@@ -228,7 +227,7 @@ iframe {
     position: absolute;
     width: 6rem;
     // height: 3.5rem;
-    background-color: transparent;
+    background: transparent;
     right: 1rem;
     // bottom: -10%;
     :deep(.dot) {

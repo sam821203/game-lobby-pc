@@ -12,7 +12,6 @@ export const usehotgameStore = defineStore("hotgameStore", {
     async gethotGame() {
       const { data } = await gethotGame();
       if (data.code === 0) {
-        console.log(data.data);
         this.hotgamedata = data.data;
         // this.isSuccess = true;
       } else {

@@ -1,10 +1,11 @@
+  // 彈窗(KEN版)
 .message-wrap {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: $popout-page-bg;
   z-index: $message-wrap-index;
 }
 .message {
@@ -17,10 +18,8 @@
   max-width: 92%;
   width: 35rem;
   overflow: hidden;
-  // height: 24rem;
-  // border: 3px solid #5b99bf;
-  background: $darkpageTop-color;
-  border-radius: 16px;
+  background: $popoutMiddle-color;
+  border-radius: $border-radius-md;
   :deep(.text-wrap) {
     margin-bottom: 10px;
   }
@@ -32,36 +31,45 @@
   }
   .title {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 4rem;
-    padding: 1rem;
+    padding: 1rem 1.2rem;
     position: relative;
-    background: $darkpageBottom-color;
-    border-radius: 10px 10px 0 0;
+    background: $popoutTop-color;
+    border-radius: $border-radius-md $border-radius-md 0 0;
     box-sizing: border-box;
-    font-size: 1.2rem;
+    color: $title;
+    font-size: 1.5rem;
     font-weight: bold;
-    span{
+    span {
+      width: 96%;
+      line-height: 140%;
       text-align: center;
     }
     .close {
-      position: absolute;
-      height: 35%;
-      object-fit: contain;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
+      // position: absolute;
+      // height: 35%;
+      width: 4%;
+      text-align: right;
+      overflow: hidden;
+      // right: 1rem;
+      // top: 50%;
+      // transform: translateY(-50%);
       // margin-right: 1rem;
       // margin-top: 2rem;
+      cursor: pointer;
+      img {
+        width: 100%;
+        object-fit: contain;
+      }
     }
   }
   .container {
     position: relative;
     width: 100%;
     height: 100%;
-    padding: 1.7rem;
+    padding: 2.4rem 3.6rem;
     .close {
       width: 3rem;
       height: 3rem;
@@ -83,6 +91,7 @@
         margin-bottom: 15px;
       }
       .content {
+        width: 100%;
         text-align: center;
         white-space: break-spaces;
         // font-size: 1.8rem;
@@ -110,6 +119,22 @@
           word-wrap: break-word;
           display: inline-block;
           word-break: break-word;
+        }
+        .list {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 16px;
+          color: $title;
+          &:last-child {
+            .list__right {
+              color: $title2;
+              font-weight: bold;
+            }
+          }
+          .tag {
+            margin-right: 4px;
+            color: $anotherservice-text-color;
+          }
         }
       }
     }

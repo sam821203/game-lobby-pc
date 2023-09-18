@@ -23,45 +23,51 @@
     </div>
   </div>
   <!--  -->
-  <table border="0">
-    <tr class="thead">
-      <td>{{ t("gameRecord.time") }}</td>
-      <td>{{ t("類型") }}</td>
-      <td>{{ t("金額") }}</td>
-      <td>{{ t("狀態") }}</td>
-      <td></td>
-    </tr>
-    <template v-for="(v, k) in tradeRecord_Data" :key="k + 'k'">
-      <!-- v-show="v.log_type != 1" -->
-      <tr>
-        <td>
-          {{ new Date(v.create_time).toLocaleString("en-GB") }}
-        </td>
-        <td>
-          <!-- <span>{{ v.log_type == 2 ? "三方" : "一般" }}</span> -->
-          <!-- <br /> -->
-          <span>{{ t(showWhichTradeType(v.log_type, v.type)) }}</span>
-        </td>
-        <td
-          v-price="v.amount"
-          :style="{ color: v.amount < 0 ? '#c80000' : '' }"
-        ></td>
-        <td :style="{ color: statusColor(v.status) }">
-          {{ changeStatus(v.status) }}
-        </td>
-        <td @click="openDetailTR(k)">
-          <div v-if="v.log_type != 1" :class="[v.pageStatus ? 'rotate90' : '']">
+  <div class="list">
+    <table border="0">
+      <tr class="thead">
+        <td>{{ t("gameRecord.time") }}</td>
+        <td>{{ t("類型") }}</td>
+        <td>{{ t("金額") }}</td>
+        <td>{{ t("狀態") }}</td>
+        <td></td>
+      </tr>
+
+      <template v-for="(v, k) in tradeRecord_Data" :key="k + 'k'">
+        <!-- v-show="v.log_type != 1" -->
+        <tr>
+          <td>
+            {{ new Date(v.create_time).toLocaleString("en-GB") }}
+          </td>
+          <td>
+            <!-- <span>{{ v.log_type == 2 ? "三方" : "一般" }}</span> -->
+            <!-- <br /> -->
+            <span>{{ t(showWhichTradeType(v.log_type, v.type)) }}</span>
+          </td>
+          <td
+            v-price="v.amount"
+            :style="{ color: v.amount < 0 ? '#c80000' : '' }"
+          ></td>
+          <td :style="{ color: statusColor(v.status) }">
+            {{ changeStatus(v.status) }}
+          </td>
+          <td @click="openDetailTR(k)">
+            <div
+              v-if="v.log_type != 1"
+              :class="[v.pageStatus ? 'rotate90' : '']"
             >
-          </div>
-        </td>
-      </tr>
-      <tr v-if="v.log_type != 1 && v.pageStatus">
-        <td colspan="5" class="detailTD">
-          <detailRecord :id="v.id" :logType="v.log_type" v-if="true" />
-        </td>
-      </tr>
-    </template>
-  </table>
+              >
+            </div>
+          </td>
+        </tr>
+        <tr v-if="v.log_type != 1 && v.pageStatus">
+          <td colspan="5" class="detailTD">
+            <detailRecord :id="v.id" :logType="v.log_type" v-if="true" />
+          </td>
+        </tr>
+      </template>
+    </table>
+  </div>
   <!-- <div class="table">
     <div class="tr">
       <div class="td"></div>
@@ -161,12 +167,16 @@ const getdata1 = async () => {
 // 判斷狀態要用啥顏色
 const statusColor = (status) => {
   var color = "red";
-  if (status.includes("成功")) {
-    color = "#00c900";
+  if (status.includes("三方成功")) {
+    color = "#808080";
   } else if (status.includes("失敗")) {
     color = "#c80000";
+  } else if (status.includes("成功")) {
+    color = "#00c900";
+  } else if (status.includes("等待")) {
+    color = "#fff";
   } else {
-    color = "#808080";
+    color = "#fc0505";
   }
   return color;
 };
@@ -191,7 +201,9 @@ const changeStatus = (e) => {
     case "訂單失敗":
       word = "Falhou";
       break;
-
+    case "三方成功，玩家正在遊戲中待系統分數處理中":
+      word = "Processando";
+      break;
     case "手動成功":
       word = "Confirmado";
       break;
@@ -222,20 +234,18 @@ onMounted(() => {
   changeDate("today");
 });
 const openDetailTR = (e) => {
-  // console.log(tradeRecord_Data);
-  // console.log(e);
   tradeRecord_Data.value[e].pageStatus = !tradeRecord_Data.value[e].pageStatus;
 };
 </script>
 
 <style lang="scss" scoped>
 .btnGroup {
-  width: 100%;
-  padding: 0.5rem;
+  width: 50%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 3% 3% 0;
   div {
     padding: 0.5rem 1rem;
     width: 25%;
@@ -247,70 +257,98 @@ const openDetailTR = (e) => {
     word-break: keep-all;
     text-align: center;
   }
-  .L1 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_L_1.png");
-  }
   .L2 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_L_2.png");
+    background: $my-func-button-bg;
+    border: $my-func-button-border 1px solid;
+    border-radius: 5px 0 0 5px;
   }
-  .M1 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_M_1.png");
+  .L1 {
+    background: $anotherservice-btn-bg;
+    border: transparent 1px solid;
+    border-radius: 5px 0 0 5px;
   }
   .M2 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_M_2.png");
+    background: $my-func-button-bg;
+    border: $my-func-button-border 1px solid;
   }
-  .R1 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_R_1.png");
+  .M1 {
+    background: $anotherservice-btn-bg;
+    border: transparent 1px solid;
   }
   .R2 {
-    background-image: url("@/assets/images/leaderBoard/topBtn/paging_R_2.png");
+    background: $my-func-button-bg;
+    border: $my-func-button-border 1px solid;
+    border-radius: 0px 5px 5px 0px;
+  }
+  .R1 {
+    background: $anotherservice-btn-bg;
+    border: transparent 1px solid;
+    border-radius: 0px 5px 5px 0px;
   }
 }
 
-table {
-  margin: auto;
-  width: calc(100%);
-  text-align: center;
-  font-size: 0.8rem;
-  // color: #2d4c76;
-  word-break: keep-all;
-  border-collapse: collapse;
-  .thead {
-    background: #2d4c76;
-    color: #5eeeff;
-
-    td {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-    }
+.list {
+  max-height: 700px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: block;
+    // height: 10px;
+    width: 10px;
   }
-  tr {
+  &::-webkit-scrollbar-track {
+    background: $scrollbar-track-bg;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $scrollbar-thumb-bg;
+    border-radius: 20px;
+  }
+
+  table {
+    margin: auto;
     width: 100%;
-    .rotate90 {
-      transform: rotate(90deg);
+    text-align: center;
+    margin-top: 2%;
+    // font-size: 0.8rem;
+    // color: #2d4c76;
+    word-break: keep-all;
+    border-collapse: collapse;
+    .thead {
+      color: $title;
+      td {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
     }
-    td {
-      padding: 0.25rem 0;
-    }
-    td:nth-child(1) {
-      width: 25%;
-    }
-    // td:nth-child(2) {
-    //   width: 23%;
-    // }
-    // td:nth-child(3) {
-    //   width: 25%;
-    // }
-    // td:nth-child(4) {
-    //   width: 15%;
-    // }
-    td:nth-child(5) {
-      width: 7%;
-      padding-right: 0.5rem;
-    }
-    .detailTD {
-      padding-right: 0.5rem;
-      padding-left: 0.5rem;
+    tr {
+      width: 100%;
+      height: 2rem;
+      line-height: 2rem;
+      .rotate90 {
+        transform: rotate(90deg);
+      }
+      td {
+        padding: 0.25rem 0;
+      }
+      td:nth-child(1) {
+        width: 25%;
+      }
+      // td:nth-child(2) {
+      //   width: 23%;
+      // }
+      // td:nth-child(3) {
+      //   width: 25%;
+      // }
+      // td:nth-child(4) {
+      //   width: 15%;
+      // }
+      td:nth-child(5) {
+        width: 7%;
+        padding-right: 0.5rem;
+      }
+      .detailTD {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+      }
     }
   }
 }

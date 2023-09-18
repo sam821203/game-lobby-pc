@@ -1,8 +1,8 @@
 <template>
-  <div class="deposit-wrapper">
+  <depositPopout v-if="orderInprogress" />
+  <div class="deposit-wrapper" v-else>
     <!-- 存款方式 -->
     <div class="deposit-way">
-      <div class="title">{{ $t("stored.depositType") }}</div>
       <div class="content">
         <button
           v-for="(bank, index) in bankList"
@@ -12,7 +12,7 @@
             { selected: selected === index },
             { maintain: bank.maintain },
           ]"
-          @click="selectWay(bank.bank_id, index)"
+          @click="selectWay(bank.bank_id, bank.route[0], index)"
           :disabled="bank.maintain"
         >
           <p v-if="bank.maintain" class="maintainWords">
@@ -30,18 +30,18 @@
     </div>
     <!-- 存款金額 -->
     <div class="deposit-amount">
+      <div class="label">{{ $t("金額") }}</div>
       <div class="default">
         <input
           type="number"
-          :placeholder="$t('stored.depositPlaceholder')"
           class="amount"
           v-model="depositAmount"
           @keyup.enter="throttleSave"
           @keyup="handleInput"
           inputmode="numeric"
           min="0"
-          :disabled="disabled"
         />
+        <!-- :placeholder="$t('stored.depositPlaceholder')" -->
         <img
           v-if="Number.isInteger(depositAmount) || depositAmount >= 20"
           class="clear"
@@ -49,7 +49,8 @@
           src="@/assets/images/memberCenter/cancel.png"
           alt=""
         />
-        <i class="bi bi-keyboard-fill" v-else></i>
+        <i class="bi"> R$ </i>
+        <!-- <i class="bi bi-keyboard-fill" v-else></i> -->
       </div>
       <div class="options">
         <button
@@ -57,80 +58,65 @@
           v-for="(option, index) in optionList"
           :key="index"
           @click="addAmount(option.amount)"
-          :disabled="disabled"
         >
           {{ option.label }}
         </button>
       </div>
     </div>
+    <div class="notice">
+      Lembrete amigável! Por favor, feche o seu jogo antes de processar o
+      Depósito ou Sacar. Obrigado!
+    </div>
     <button
       :class="[
         'confirm',
         {
-          disabled:
-            !depositAmount || !depositWay || depositAmount < 20 || disabled,
+          disabled: !depositAmount || !depositWay || depositAmount < 20,
         },
       ]"
       @click.prevent="throttleSave"
-      :disabled="
-        !depositAmount || !depositWay || depositAmount < 20 || disabled
-      "
+      :disabled="!depositAmount || !depositWay || depositAmount < 20"
     >
       {{ $t("stored.OK") }}
     </button>
-    <!-- <div class="firstDepositCheck container" v-if="!userInfo.is_deposit">
-      <input
-        type="checkbox"
-        id="firstDeposit"
-        v-model="firstDeposit"
-        value="1"
-      />
-
-      <label for="firstDeposit"></label>
-      <span :class="{ selectFirstDeposit: firstDeposit }"
-        >I want to participate in this promotional campaign.</span
+    <div v-if="eventList" class="chooseOption">
+      <div
+        class="firstDepositCheck container"
+        v-for="event in eventList"
+        :key="event.id"
       >
+        <div
+          :class="['checkbox', { checkbox2: checkId === event.id }]"
+          @click="selectedId(event.id)"
+        >
+          <div :class="['check', { checked: checkId === event.id }]" />
+        </div>
+        <p style="margin-left: 8%">Eu quero participar desta promoção.</p>
+        <span :class="{ selectEvent: selected }" style="margin-left: 8%">{{
+          event.promotion
+        }}</span>
+        <div
+          class="contentWrap"
+          v-for="(item, index) in event.conditions"
+          :key="index"
+        >
+          <p class="eventType">
+            <span
+              >{{ $t("存款範圍") }}: {{ item.lower / 10000 }} ~
+              {{ item.upper / 10000 }}</span
+            ><span class="bonus"
+              >{{ $t("紅利") }}:
+              {{
+                event.bonus_type === 0
+                  ? item.bonus / 10000
+                  : item.bonus / 10000 + "%"
+              }}</span
+            >
+          </p>
+          <p>{{ $t("提款流水倍數") }}: {{ item.threshold_multiple }}</p>
+        </div>
+      </div>
     </div>
-    <p v-if="!userInfo.is_deposit">
-      Only the first deposit after the registration.
-    </p>
-    <table border="1" v-if="!userInfo.is_deposit">
-      <tr class="head">
-        <td>Exact Deposit</td>
-        <td>Cash Back</td>
-        <td>Valid Bets to Withdraw</td>
-      </tr>
-      <tr>
-        <td>200-50,000</td>
-        <td>10%</td>
-        <td>1X</td>
-      </tr>
-    </table>
-    <div class="everydayCashBack container">
-      <input
-        type="checkbox"
-        id="everydayCashBack"
-        v-model="everydayCashBack"
-        value="2"
-      />
-      <label for="everydayCashBack"></label>
-      <span :class="{ selectEverydayCashBack: everydayCashBack }"
-        >I want to participate in this promotional campaign.</span
-      >
-    </div>
-    <p>Everyday cash back.</p>
-    <table border="1">
-      <tr class="head">
-        <td>Deposit</td>
-        <td>Cash Back</td>
-        <td>Valid Bets to Withdraw</td>
-      </tr>
-      <tr>
-        <td>100-50,000</td>
-        <td>3%</td>
-        <td>1X</td>
-      </tr>
-    </table> -->
   </div>
 </template>
 
@@ -143,16 +129,20 @@ import {
   chargeApi,
   getOrderApi,
   getAllOrderApi,
+  getEventApi,
 } from "@/api/deposit";
 import throttle from "@/utils/throttle";
 import { useDeposit } from "@/store/depositStore";
 import { useLoading } from "@/store/loadingStore";
-import { useModal } from "@/store/modalStore";
+// import { useModal } from "@/store/modalStore";
 import { storeToRefs } from "pinia";
 import { useStore } from "@/store/index";
+//
+import depositPopout from "@/views/deposit/depositPopout";
+//
 const { useAuth } = useStore();
 const authStore = useAuth();
-// const { userInfo } = storeToRefs(authStore);
+const { loginData } = storeToRefs(authStore); //userInfo
 const { getUserInfo } = authStore;
 const depositStore = useDeposit();
 const { orderNum } = storeToRefs(depositStore);
@@ -174,65 +164,44 @@ const depositWay = ref(5);
 const depositAmount = ref(null);
 const bankList = ref([]);
 const loadingStore = useLoading();
-const modalStore = useModal();
-const { toggleModal, modalType } = modalStore;
-const disabled = ref(false);
+// const modalStore = useModal();
+// const { toggleModal, modalType } = modalStore;
 // const firstDeposit = ref(true);
 // const everydayCashBack = ref(false);
-const campaignId = ref(1);
 const bankId = ref(null);
-
+const depositRoute = ref("brapay_pay");
+const eventList = ref(null);
+//
+const checkId = ref(0);
+const selectedId = (id) => {
+  if (id !== checkId.value) {
+    checkId.value = id;
+  } else {
+    checkId.value = 0;
+  }
+};
 getUserInfo();
 
 onMounted(() => {
   getAllOrder();
-  // if (userInfo.value.is_deposit) {
-  //   everydayCashBack.value = true;
-  //   firstDeposit.value = false;
-  //   campaignId.value = 2;
-  // }
   getUserInfo();
   getBank();
+  getEvent();
 });
-
-// watch(everydayCashBack, (val) => {
-//   if (!userInfo.value.is_deposit && val) {
-//     firstDeposit.value = false;
-//     everydayCashBack.value = true;
-//     campaignId.value = 2;
-//   }
-//   if (userInfo.value.is_deposit && val && !firstDeposit.value) {
-//     campaignId.value = 2;
-//   }
-//   if (val === false) {
-//     campaignId.value = 0;
-//   }
-// });
-
-// watch(firstDeposit, (val) => {
-//   if (val === false && !everydayCashBack.value) {
-//     firstDeposit.value = false;
-//     everydayCashBack.value = false;
-//     campaignId.value = 0;
-//   }
-//   if (val === true) {
-//     firstDeposit.value = true;
-//     everydayCashBack.value = false;
-//     campaignId.value = 1;
-//   }
-// });
-
+const getEvent = async () => {
+  const data = await getEventApi(loginData.value.user_uuid);
+  eventList.value = data.data.data.data;
+};
+//
+const orderInprogress = ref(false);
 // 驗證有無有效存款單
 const isValidOrder = () => {
   if (validOrder.value.length) {
-    disabled.value = true;
     depositAmount.value = null;
-    console.log("---VALIDORDER---");
     depositStore.$patch({
       orderNum: validOrder.value[0].merch_order_no,
     });
-    toggleModal(true);
-    modalType("depositPopout", "longContent");
+    orderInprogress.value = true;
   }
 };
 
@@ -240,7 +209,6 @@ const isValidOrder = () => {
 const validOrder = ref(null);
 const getAllOrder = async () => {
   const res = await getAllOrderApi();
-  // console.log(res);
   validOrder.value = res.data.data.orders.filter(
     (order) =>
       order.status === 2 &&
@@ -257,23 +225,20 @@ const getBank = async () => {
     (bank) => bank.open === true && bank.type === "charge"
   );
   bankId.value = bankList.value[0].bank_id;
-  console.log(bankId.value);
-  // if (bankList.value[0].maintain === true) {
-  //   selected.value = 1;
-  //   bankId.value = 7;
-  // }
-  // if (
-  //   bankList.value[0].maintain === true &&
-  //   bankList.value[1].maintain === true
-  // ) {
-  //   selected.value = -1;
-  //   disabled.value = true;
-  // }
-  console.log(bankList.value);
+  if (bankList.value[0].maintain === true) {
+    selected.value = 1;
+    bankId.value = bankList.value[1].bank_id;
+  }
+  if (
+    bankList.value[0].maintain === true &&
+    bankList.value[1].maintain === true
+  ) {
+    selected.value = -1;
+  }
 };
 
 // 存款方式
-const selectWay = (id, index) => {
+const selectWay = (id, route, index) => {
   if (
     bankList.value[0].maintain === true &&
     bankList.value[1].maintain === true
@@ -282,9 +247,9 @@ const selectWay = (id, index) => {
     bankId.value = -1;
     return;
   }
-  console.log(id);
   bankId.value = id;
   selected.value = index;
+  depositRoute.value = route;
 };
 
 // 儲值金額按鈕
@@ -296,6 +261,9 @@ const addAmount = (value) => {
       content: "請先選擇存款方式",
     });
     return;
+  }
+  if (depositAmount.value === "") {
+    depositAmount.value = Number(0);
   }
   depositAmount.value += value;
   //  else {
@@ -309,6 +277,9 @@ const handleInput = (e) => {
   if (e.key === "Backspace") {
     return;
   }
+  if (e.key === "Enter") {
+    return;
+  }
   depositAmount.value = Number(
     depositAmount.value.toString().replace(/[^0-9]/g, "")
   );
@@ -318,8 +289,6 @@ const handleInput = (e) => {
   if (depositAmount.value > 20000) {
     depositAmount.value = 20000;
   }
-
-  // console.log(typeof depositAmount.value);
 };
 
 // 清除input
@@ -328,15 +297,18 @@ const clear = () => {
 };
 
 // 建立存款單
-const handleDeposit = async () => {
+const handleDeposit = async (e) => {
+  if (e.key === "Enter") {
+    return;
+  }
   isValidOrder();
 
   loadingStore.$patch({
     loadingStatus: true,
   });
-  const res = await chargeApi(bankId.value, "brapay_pay", {
+  const res = await chargeApi(bankId.value, depositRoute.value, {
     tx_amount: Number(depositAmount.value),
-    campaign_id: campaignId.value,
+    campaign_id: checkId.value,
     // is_deposit: userInfo.value.is_deposit,
   });
   // if (res) {
@@ -347,7 +319,6 @@ const handleDeposit = async () => {
     depositStore.$patch({
       orderNum: res.data.data.merch_order_no,
     });
-    // router.push("/deposit/depositForm");
     getOrderPath();
   }
 };
@@ -356,12 +327,14 @@ const handleDeposit = async () => {
 const chargeUrl = ref("");
 const getOrderPath = async () => {
   const res = await getOrderApi(orderNum.value);
-  // console.log(res);
   if (res.data.code === 0) {
     chargeUrl.value = res.data.data.order.content.charge_url;
     window.open(chargeUrl.value);
     nextTick(() => {
-      location.reload();
+      // location.reload();
+      getAllOrder();
+      getUserInfo();
+      getBank();
     });
   }
 };
@@ -374,14 +347,6 @@ const throttleSave = throttle(handleDeposit, 3000, true);
 .deposit-wrapper {
   color: $primary;
   .deposit-way {
-    .title {
-      text-align: center;
-      margin-bottom: 5%;
-      color: #fff;
-      background-color: #8c17c2;
-      height: 2.5rem;
-      line-height: 2.5rem;
-    }
     .content {
       width: 60%;
       margin: 0 auto;
@@ -389,31 +354,31 @@ const throttleSave = throttle(handleDeposit, 3000, true);
       flex-direction: row;
       justify-content: space-evenly;
       .item {
-        padding: 2%;
         background: none;
+        padding: 2%;
+        border-radius: $border-radius-md;
+        border: 5px solid transparent;
         .icon {
-          width: 80px;
-          height: 80px;
+          width: 70px;
+          height: 70px;
         }
 
         .name {
           text-align: center;
           margin-top: 5%;
-          font-size: 0.9rem;
+          // font-size: 0.9rem;
           color: #fff;
         }
       }
       .selected {
-        padding: 3%;
         border: 5px solid #f7e4ff;
-        border-radius: 10px;
         // background-image: url("@/assets/images/memberCenter/choose.png");
         // background-size: 100% 100%;
         // background-repeat: no-repeat;
       }
       .maintain {
-        background: gray;
-        border-radius: 10px;
+        background: $disable-btn-color;
+        border-radius: $border-radius-md;
         position: relative;
         img {
           filter: brightness(0.5);
@@ -492,24 +457,30 @@ const throttleSave = throttle(handleDeposit, 3000, true);
     border-radius: 5px;
   }
   .deposit-amount {
-    margin-top: 5%;
+    margin-top: 10px;
+    .label {
+      width: 90%;
+      font-weight: bold;
+      font-size: 1rem;
+      margin: 0 auto 5px auto;
+    }
     .default {
       width: 90%;
       height: 2.5rem;
       margin: 0 auto;
       text-align: center;
       line-height: 2.5rem;
-      border: 2px solid #8c17c2;
+      border: 2px solid $withdraw-deposit-input-border;
       border-radius: 5px;
       position: relative;
+      background: $default-input-bg;
       input {
         background: none;
       }
       .amount {
         font-weight: bold;
-        width: 100%;
-        // background-color: #fff;
-        text-align: center;
+        width: 75%;
+        text-align: right;
         outline: none;
         color: white;
         &::-webkit-input-placeholder {
@@ -527,29 +498,27 @@ const throttleSave = throttle(handleDeposit, 3000, true);
         opacity: 0.6;
       }
       i {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
         position: absolute;
-        right: 5%;
-        top: -12%;
+        left: 5px;
+        top: -6%;
         font-weight: 600;
-        filter: contrast(0);
-        opacity: 0.6;
+        color: $withdraw-deposit-input-border;
       }
     }
     .options {
       width: 95%;
       margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       margin-top: 3%;
       .option {
-        width: calc(23%);
-        height: 2rem;
+        display: inline-block;
+        width: calc(30%);
+        height: 2.7rem;
+        line-height: 2.7rem;
         text-align: center;
-        line-height: 2rem;
-        border-radius: 10px;
-        background-color: #8c17c2;
+
+        border-radius: 5px;
+        background: $canclick-pageBtn-bg;
         margin: 1%;
         color: #fff;
         font-weight: 600;
@@ -560,11 +529,11 @@ const throttleSave = throttle(handleDeposit, 3000, true);
   .confirm {
     width: 90%;
     height: 2.5rem;
-    background-color: #8c17c2;
+    background: $confirm-btn-bg;
     margin: 0 auto;
     text-align: center;
     line-height: 2.5rem;
-    border-radius: 10px;
+    border-radius: $border-radius-md;
     margin-top: 5%;
     color: #fff;
     font-weight: 600;
@@ -573,20 +542,26 @@ const throttleSave = throttle(handleDeposit, 3000, true);
     align-items: center;
   }
   .disabled {
-    // background-color: #f7e4ff;
     filter: grayscale(0.7);
     color: gray;
   }
+
+  .chooseOption {
+    width: 100%;
+    padding: 0 12px;
+    height: 200px;
+    overflow-y: auto;
+  }
+
   .container {
     margin: 4% 2% 1%;
     position: relative;
-    display: flex;
     input {
       margin-right: 2%;
     }
-    label {
+    .checkbox {
       /* 主外框 */
-      position: relative;
+      position: absolute;
       display: inline-block;
       width: 22px;
       height: 20px;
@@ -598,67 +573,95 @@ const throttleSave = throttle(handleDeposit, 3000, true);
       -o-transition: background-color 0.2s ease-in;
       transition: background-color 0.2s ease-in;
     }
-    span {
-      margin-left: 2%;
+    // span {
+    //   margin-left: 2%;
 
-      font-weight: 600;
-    }
-    .selectFirstDeposit,
-    .selectEverydayCashBack {
-      color: #d97816;
-    }
+    //   font-weight: 600;
+    // }
+    // .selectEvent,
+    // .selected {
+    //   color: #d97816;
+    // }
 
-    label::before,
-    label::after {
-      /* 上面的打勾 */
-      content: "";
-      position: absolute;
-      width: 3px;
-      background-color: white;
-      -moz-transition: opacity 0.2s ease-in;
-      -webkit-transition: opacity 0.2s ease-in;
-      -o-transition: opacity 0.2s ease-in;
-      transition: opacity 0.2s ease-in;
-      opacity: 0;
+    .checkbox {
+      &::before,
+      &::after {
+        /* 上面的打勾 */
+        content: "";
+        position: absolute;
+        width: 3px;
+        background: $deposit-notice-checked-icon;
+        -moz-transition: opacity 0.2s ease-in;
+        -webkit-transition: opacity 0.2s ease-in;
+        -o-transition: opacity 0.2s ease-in;
+        transition: opacity 0.2s ease-in;
+        opacity: 0;
+      }
     }
-
-    label::before {
-      /* 打勾左邊的線 */
-      height: 9px;
-      top: 7px;
-      left: 3px;
-      -moz-transform: rotate(-45deg);
-      -webkit-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-      transform: rotate(-45deg);
-    }
-
-    label::after {
-      /* 打勾右邊的線 */
-      height: 13px;
-      top: 2px;
-      left: 10px;
-      -moz-transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      transform: rotate(45deg);
+    .checkbox {
+      &::before {
+        /* 打勾左邊的線 */
+        height: 9px;
+        top: 7px;
+        left: 3px;
+        -moz-transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+        -o-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+      }
     }
 
-    input:checked + label {
+    .checkbox {
+      &::after {
+        /* 打勾右邊的線 */
+        height: 13px;
+        top: 2px;
+        left: 10px;
+        -moz-transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+    }
+
+    .checked {
       /* 當check時 按鈕顏色改變 */
-      background-color: #ff8d1a;
+      background: $deposit-notice-checked-bg;
     }
 
-    input:checked + label::before,
-    input:checked + label::after {
-      /* 當check時 打勾消失 */
-      opacity: 1;
+    .checkbox2 {
+      &::before {
+        opacity: 1;
+      }
     }
 
-    input {
-      display: none;
+    .checkbox2 {
+      &::after {
+        /* 當check時 打勾消失 */
+        opacity: 1;
+      }
+    }
+
+    // input {
+    //   display: none;
+    // }
+    .contentWrap {
+      // width: 100%;
+      margin-left: 8%;
+      p {
+        margin: 1% 0 1%;
+      }
+      .eventType {
+        display: flex;
+        justify-content: space-between;
+        width: 80%;
+        .bonus {
+          width: 40%;
+          text-align: start;
+        }
+      }
     }
   }
 
@@ -666,21 +669,10 @@ const throttleSave = throttle(handleDeposit, 3000, true);
     width: 97%;
     margin: 0 2%;
   }
-  .line2 {
-    margin: 0 auto;
-    color: red;
-  }
-  table {
-    border-collapse: collapse;
-    width: 97%;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 0.8rem;
-    margin-bottom: 2%;
-    .head {
-      background-color: rgb(99, 129, 161);
-      color: rgb(100, 240, 253);
-    }
-  }
+}
+.notice {
+  padding: 1rem 2.5rem 0 2.5rem;
+  text-align: center;
+  color: green;
 }
 </style>

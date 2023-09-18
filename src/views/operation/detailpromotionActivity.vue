@@ -1,4 +1,6 @@
 <template>
+  <Announcement />
+  <MiddleBar />
   <div class="detailpromotionActivity">
     <img :src="getAnnouncementImageUrl(data.picture_id)" class="picture_id" />
     <h2>{{ data.title }}</h2>
@@ -9,9 +11,6 @@
     </p>
     <BaseCard class="content">
       <div v-html="data.data"></div>
-      <BaseButton mode="rounded light" @click="goBack">
-        {{ $t("activityList.claimBonus") }}
-      </BaseButton>
     </BaseCard>
     <div class="btns-group">
       <BaseButton
@@ -47,37 +46,61 @@ import { getPlayerId } from "@/utils/cookie";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "@/store/index";
 import { storeToRefs } from "pinia";
-import { readAnnouncementApi } from "@/api/announcement";
+import { getBonusListApi, readAnnouncementApi } from "@/api/announcement";
 
+import Announcement from "@/views/home/components/announcement.vue";
+import MiddleBar from "@/views/home/components/middleBar.vue";
 import BaseButton from "@/components/form/baseButton.vue";
 
-const { useAnnouncement } = useStore();
+const { useAnnouncement, useAuth } = useStore();
 const { getAnnouncementData } = useAnnouncement();
 const { eventData } = storeToRefs(useAnnouncement());
 const route = useRoute();
 const router = useRouter();
-const data = ref({ picture_id: "", start_time: "", end_time: "", data: "" });
+const authStore = useAuth();
+const { userInfo } = storeToRefs(authStore);
+const data = ref({});
 const prevDisabled = ref(false);
 const nextDisabled = ref(false);
+const totalList = ref(null);
+const needClaim = ref(false);
+
+const getList = async () => {
+  const bonusListRes = await getBonusListApi(userInfo.value.account);
+  totalList.value = bonusListRes.data.data.data;
+
+  totalList.value.forEach((li) => {
+    if (li.status === 0) {
+      needClaim.value = true;
+      return;
+    }
+    needClaim.value = false;
+  });
+};
+getList();
 
 const getAnnouncementImageUrl = (pid) => {
   var url = process.env.VUE_APP_GETEVENTIMG;
   return pid === "" ? undefined : url + pid;
 };
 
-const formatTime = (time) =>
-  new Date(time).toLocaleString("zh", { hour12: false });
+const formatTime = (time) => {
+  const result = new Date(time).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+  });
+  return result.split(",")[0];
+};
 
-const goBack = () => router.push("/activity/activityList");
+const goBack = () => router.push(`/activity/activityList/`);
 
 // 切換上下一則公告
 const currentPath = router.currentRoute.value.path;
 const dataLength = eventData.value.length;
-const isFirstPage = Number(route.query.key) === 0;
-const isLastPage = Number(route.query.key) === dataLength - 1;
+const initialKey = Number(route.query.key || 0);
 
-if (isFirstPage) prevDisabled.value = true;
-if (isLastPage) nextDisabled.value = true;
+// 頁面加載時初始化
+if (initialKey === 0) prevDisabled.value = true;
+if (initialKey >= dataLength - 1) nextDisabled.value = true;
 
 const navigatePromo = (diff) => {
   const currentKey = Number(route.query.key) + diff;
@@ -89,6 +112,7 @@ const navigatePromo = (diff) => {
     router.push(`${currentPath}?key=0`);
     return;
   }
+
   if (currentKey >= dataLength - 1) {
     data.value = eventData.value[dataLength - 1];
     prevDisabled.value = false;
@@ -98,8 +122,11 @@ const navigatePromo = (diff) => {
   }
 
   data.value = eventData.value[currentKey];
+  prevDisabled.value = false;
+  nextDisabled.value = false;
   router.push(`${currentPath}?key=${currentKey}`);
 };
+// const addHash = (currentID) => `/activity/activityList#${currentID}`;
 
 onMounted(async () => {
   if (eventData.value.length == 0) {
@@ -135,12 +162,12 @@ onMounted(async () => {
     margin: 0 0 4px 0;
     font-size: 16px;
     line-height: 150%;
-    color: $primary-title;
+    color: $title;
   }
   .time {
     margin-bottom: 24px;
     font-size: 12px;
-    color: $secondary-text;
+    color: $func-button-color-default;
     & + div {
       margin-bottom: 32px;
     }
@@ -150,10 +177,16 @@ onMounted(async () => {
     justify-content: space-between;
     width: 100%;
     .isDisabled {
-      background-color: $button-disabled;
+      background: $button-disabled-bg;
       filter: contrast(0.3);
       pointer-events: none;
     }
+  }
+  .isDisabled {
+    background: $button-disabled-bg;
+    filter: contrast(0.3);
+    user-select: none;
+    pointer-events: none;
   }
 }
 </style>

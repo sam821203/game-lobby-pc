@@ -51,19 +51,6 @@ export const useSounds = defineStore("soundsStore", {
         });
         console.log(res);
       }
-      // getUserInfo();
-      // setSeState(this.SeButtonValue);
     },
-    // getBgmSetting() {
-    //   console.log(getBgmState("bgmState"));
-    //   if (this.bgmSound === false || !getBgmState("bgmState")) {
-    //     setBgmState(this.bgmSound);
-    //   } else {
-    //     this.bgmSound = getBgmState("bgmState");
-    //     if (this.bgmSound === false) {
-    //       this.bgmButtonValue === "off";
-    //     }
-    //   }
-    // },
   },
 });

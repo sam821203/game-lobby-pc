@@ -2,40 +2,16 @@
   <table>
     <tr>
       <td colspan="2">
-        <span>{{ $t("單號") }}:</span>
-        <br />
-        <span>{{ tabledata.oid }}</span>
+        <span class="item">{{ $t("單號") }}:</span>
+        <!-- <br /> -->
+        <span class="num">{{ tabledata.oid }}</span>
+      </td>
+      <td>
+        <span class="item">{{ $t("存款類型") }}:</span>
+        <!-- <br /> -->
+        <span class="num">{{ tabledata.type }}</span>
       </td>
     </tr>
-    <tr>
-      <td>
-        <span>{{ $t("實際金額") }}:</span>
-        <br />
-        <span v-price="tabledata.amount"></span>
-      </td>
-
-      <td>
-        <span>{{ $t("存款類型") }}:</span>
-        <br />
-        <span>{{ tabledata.type }}</span>
-      </td>
-    </tr>
-    <tr v-if="false">
-      <td>
-        <span>手續費:</span>
-        <br />
-        <span>沒這東西</span>
-      </td>
-      <td>
-        <span>銀行卡號:</span>
-        <br />
-        <span></span>
-      </td>
-    </tr>
-    <!-- <tr>
-      <td></td>
-      <td></td>
-    </tr> -->
   </table>
 </template>
 <script setup>
@@ -51,11 +27,7 @@ const props = defineProps({
     default: "",
   },
 });
-// console.log(props);
 const tabledata = ref("");
-// const { type: propsType } = toRefs(props);
-// const type = ref(propsType.value);
-// type.value = 123;
 
 const getdata = async () => {
   const { data } = await request()({
@@ -82,13 +54,16 @@ table {
     // border: 5px solid transparent;
     td {
       border: 1px solid transparent;
-      span:nth-child(3) {
-        // color: black;
-      }
     }
     td {
-      border-color: #2d4c76 #2d4c76 #2d4c76 transparent;
+      border: $similar-table-border;
       padding: 0.2rem;
+      .item {
+        color: $similar-table-title;
+      }
+      .num {
+        margin-left: 2%;
+      }
     }
   }
 }

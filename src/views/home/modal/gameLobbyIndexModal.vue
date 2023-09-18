@@ -34,8 +34,24 @@
           <img :src="require(`@/assets/images/game/icon/icon_hot.png`)" />
           <span>{{ $t("熱門") }}</span>
         </div>
+        <div class="btnGroup">
+          <img
+            :src="arrowFunc('hot', 'pre')"
+            class="preBtn"
+            @mousedown="preScroll('hot')"
+            @mouseleave="stoppreScroll()"
+            @mouseup="stoppreScroll()"
+          />
+          <img
+            :src="arrowFunc('hot', 'next')"
+            class="nextBtn"
+            @mousedown="nextScroll('hot')"
+            @mouseleave="stopnextScroll()"
+            @mouseup="stopnextScroll()"
+          />
+        </div>
       </div>
-      <ul class="gameWrap">
+      <ul class="gameWrap gameWrap_hot">
         <li v-for="(v, k) in hotgamedata" :key="k" class="gameItem">
           <img
             class="gameIcon"
@@ -50,6 +66,7 @@
                 },
                 comingsoon: false,
                 datas: v,
+                thiscategory: 'toIndex',
               })
             "
           />
@@ -63,15 +80,31 @@
         <div class="title">
           <img :src="require(`@/assets/images/game/icon/icon_${k}.png`)" />
           <span>{{ $t(k) }}</span>
+          <div class="moregames" @click="entryHandler(k)">
+            <span>{{ $t("更多遊戲") }} </span>
+            <img
+              :src="require(`@/assets/images/mainMenu/background/arrow_1.png`)"
+            />
+          </div>
         </div>
-        <div class="moregames" @click="entryHandler(k)">
-          <span>{{ $t("更多遊戲") }} </span>
+        <div class="btnGroup">
           <img
-            :src="require(`@/assets/images/mainMenu/background/arrow_1.png`)"
+            :src="arrowFunc(k, 'pre')"
+            class="preBtn"
+            @mousedown="preScroll(k)"
+            @mouseleave="stoppreScroll()"
+            @mouseup="stoppreScroll()"
+          />
+          <img
+            :src="arrowFunc(k, 'next')"
+            class="nextBtn"
+            @mousedown="nextScroll(k)"
+            @mouseleave="stopnextScroll()"
+            @mouseup="stopnextScroll()"
           />
         </div>
       </div>
-      <ul class="gameWrap">
+      <ul :class="['gameWrap', `gameWrap_${k}`]">
         <li
           class="gameItem"
           @click="
@@ -84,7 +117,7 @@
               },
               comingsoon: gameEntry.is_comming_soon,
               datas: gameEntry,
-              category: k,
+              thiscategory: 'toIndex',
             })
           "
           v-for="(gameEntry, gameEntryKey) in v"
@@ -138,6 +171,8 @@ import loading from "@/components/loading";
 import { useI18n } from "vue-i18n";
 import { usectrlLogin } from "@/store/ctrlLogin";
 import { usehotgameStore } from "@/store/hotgame";
+
+const { depositPageStatus } = storeToRefs(usectrlLogin());
 const { hotgamedata } = storeToRefs(usehotgameStore());
 const { t } = useI18n();
 
@@ -221,7 +256,6 @@ const getAllgameList = async () => {
     gameList.value[k] = await getGameListHanlder(tn);
   }
   isLoading.value = false;
-  console.log(gameList.value);
 };
 
 // const totalStudios = ref([
@@ -257,7 +291,7 @@ const enterGame = async ({
   forbind,
   comingsoon,
   datas,
-  categoryData,
+  thiscategory,
 }) => {
   // studio 傳給後端的值，targetStudio為route參數，因targetStudio可能為空值(all)所以需要拆分兩個
   if (comingsoon) {
@@ -287,7 +321,7 @@ const enterGame = async ({
       joinGame: true,
     })
       .then(() => {
-        router.push("/deposit/deposit");
+        depositPageStatus.value = true;
       })
       .catch(() => {
         console.log("繼續遊戲");
@@ -308,7 +342,8 @@ const enterGame = async ({
     };
     // 可能要改
     // const { category, studio: targetStudio } = 12;
-    const category = categoryTans(categoryData);
+    const category =
+      thiscategory === "toIndex" ? "toIndex" : categoryTans(thiscategory);
     const studio = datas.studio;
     const res = await getGameUrlApi(studio, gameId, data);
     gameStore.$patch({
@@ -321,29 +356,62 @@ const enterGame = async ({
     });
   }
 };
+//
+const whichClick = ref([]);
+const prefunc = ref(null);
+const preScroll = (v) => {
+  whichClick.value = [v, "pre"];
+  if (document.getElementsByClassName(`gameWrap_${v}`)[0]) {
+    document.getElementsByClassName(`gameWrap_${v}`)[0].scrollLeft -= 100;
+  }
+  prefunc.value = setInterval(() => {
+    if (document.getElementsByClassName(`gameWrap_${v}`)[0]) {
+      document.getElementsByClassName(`gameWrap_${v}`)[0].scrollLeft -= 100;
+    }
+  }, 200);
+};
+const stoppreScroll = () => {
+  whichClick.value = [];
+  clearInterval(prefunc.value);
+};
+//\
+const arrowFunc = (e, k) => {
+  return require(`@/assets/images/mainMenu/${
+    whichClick.value[0] == e && whichClick.value[1] == k
+      ? "icon_arrow_2"
+      : "icon_arrow_1"
+  }.png`);
+};
+//
+const nextfunc = ref(null);
+const nextScroll = (v) => {
+  whichClick.value = [v, "next"];
+  clearInterval(nextfunc.value);
+  if (document.getElementsByClassName(`gameWrap_${v}`)[0]) {
+    document.getElementsByClassName(`gameWrap_${v}`)[0].scrollLeft += 100;
+  }
+  nextfunc.value = setInterval(() => {
+    if (document.getElementsByClassName(`gameWrap_${v}`)[0]) {
+      document.getElementsByClassName(`gameWrap_${v}`)[0].scrollLeft += 100;
+    }
+  }, 200);
+};
+const stopnextScroll = () => {
+  whichClick.value = [];
+  clearInterval(nextfunc.value);
+};
 </script>
 
 <style lang="scss" scoped>
 .gameLobby {
   position: relative;
   width: calc(100% - 10px);
-  // height: calc(100vh - 7rem);
   padding: 10px 5px 0 5px;
   overflow-y: auto;
-  // background: red;
   margin: auto;
   .optionBar {
-    // position: sticky;
-    // height: 150px;
     top: 0rem;
     left: 0;
-    // z-index: 10;
-    // background: #fff;
-    background: #23003e;
-    // &.notLogin {
-    //   top: $notLogin-topBar-height;
-    // }
-
     .gameTypeWrap {
       width: 100%;
       height: 90px;
@@ -367,23 +435,41 @@ const enterGame = async ({
   .noticeChooseType {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0.5rem 0.5rem;
     .title {
       display: flex;
       align-items: center;
       width: 8rem;
       font-size: 1.3rem;
-    }
-    .moregames {
-      display: flex;
-      align-items: center;
-      margin-left: 2rem;
-      color: #a903d2;
-      font-size: 1rem;
-      span {
-        margin-right: 0.5rem;
+      .moregames {
+        display: flex;
+        align-items: center;
+        margin-left: 2rem;
+        color: #a903d2;
+        font-size: 1rem;
+        span {
+          white-space: nowrap;
+          margin-right: 0.5rem;
+        }
       }
     }
+    .btnGroup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .preBtn {
+        // tra
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      .nextBtn {
+        transform: scale(-1);
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+    }
+
     img {
       margin-right: 0.5rem;
     }
@@ -398,15 +484,14 @@ const enterGame = async ({
     overflow-x: auto;
     //自定義scrollbar 寬度
     &::-webkit-scrollbar {
-      display: block;
+      display: none;
       height: 10px;
     }
     &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.9);
+      background: $scrollbar-track-bg;
     }
     &::-webkit-scrollbar-thumb {
-      // background: rgb(31, 120, 224);
-      background: rgba(255, 255, 255, 0.5);
+      background: $scrollbar-thumb-bg;
       border-radius: 20px;
     }
     .gameItem {
@@ -423,7 +508,7 @@ const enterGame = async ({
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: $popout-page-bg;
         z-index: 1;
         display: flex;
         justify-content: center;

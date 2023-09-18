@@ -2,11 +2,19 @@
   <div class="iframeWrap">
     <UseDraggable
       :initialValue="{ x: 30, y: 30 }"
-      style="position: absolute"
+      style="position: fixed"
       v-if="hasHomeBtn"
-      @click="closeWindow($event, 'handleLeave')"
     >
-      <img src="@/assets/images/game/exit_button.png" alt="back" class="exit" />
+      <img
+        src="@/assets/images/game/exit_button.png"
+        alt="back"
+        class="exit"
+        style="user-select: none"
+        @mousedown="mousedownStart"
+        @mouseup="mousedownCancel($event)"
+        draggable="false"
+      />
+      <!-- @click="closeWindow($event, 'handleLeave')" -->
     </UseDraggable>
     <iframe
       :src="gameUrl"
@@ -55,11 +63,10 @@ const router = useRouter();
 const route = useRoute();
 
 const category = computed(() => route.params.category);
-const studio = computed(() => route.params.studio);
+// const studio = computed(() => route.params.studio);
 const hasHomeBtn = computed(() => isBoolean(route.query.hasHomeBtn));
 
 const closeWindow = (e, handler) => {
-  console.log(e.data);
   if (e.data === "closeWindow" || handler === "handleLeave") {
     gameStore.$patch({
       gameUrl: "",
@@ -92,13 +99,15 @@ watch(
           iframe.value.src = "about:blank";
           iframe.value.contentWindow.close();
           isLoading.value = true;
-
           setTimeout(() => {
-            console.log(category.value);
             isLoading.value = false;
-            console.log(typeof category.value);
-            if (category.value !== "undefined" && category.value !== "null") {
-              router.push(`/gamelobby/${category.value}/${studio.value}`);
+            if (
+              category.value !== "undefined" &&
+              category.value !== "null" &&
+              category.value !== "toIndex"
+            ) {
+              // router.push(`/gamelobby/${category.value}/${studio.value}`);
+              router.push(`/gamelobby/${category.value}/`);
               openSsevent();
             } else {
               router.push("/home");
@@ -126,15 +135,32 @@ onBeforeUnmount(() => {
   window.removeEventListener("message", closeWindow);
   window.removeEventListener("resize", resizeIframe);
 });
+//
+const mouseCount = ref(0);
+const mouseFunc = ref(null);
+const mousedownStart = () => {
+  mouseFunc.value = setInterval(() => {
+    mouseCount.value += 100;
+  }, 100);
+};
+const mousedownCancel = (ev) => {
+  if (mouseCount.value <= 500) {
+    closeWindow(ev, "handleLeave");
+  }
+  clearInterval(mouseFunc.value);
+  mouseCount.value = 0;
+};
 </script>
 
 <style lang="scss" scoped>
 .iframeWrap {
   // height: calc(var(--vh, 1vh) * 100);
   position: sticky;
-  top: $topBar-height;
   width: 100%;
-  height: calc(100vh - $topBar-height);
+  // height: calc(100vh - $topBar-height);
+  // top: $topBar-height;
+  top: 0;
+  height: 100vh;
   background: #000;
   // position: relative;
   .iframe {
